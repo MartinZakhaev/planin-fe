@@ -9,6 +9,7 @@ import {
   Frame,
   GalleryVerticalEnd,
   Map,
+  Package,
   PieChart,
   Settings2,
   SquareTerminal,
@@ -133,6 +134,17 @@ const data = {
         {
           title: "Limits",
           url: "#",
+        },
+      ],
+    },
+    {
+      title: "Master Data",
+      url: "#",
+      icon: Package,
+      items: [
+        {
+          title: "Units",
+          url: "/dashboard/units",
         },
       ],
     },
