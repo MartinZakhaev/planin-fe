@@ -1,16 +1,16 @@
 'use client';
 
 import { Unit } from '@/types/unit';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
+import { DataTable, createSelectColumn } from '@/components/ui/data-table';
 import { Button } from '@/components/ui/button';
-import { Edit2, Trash2 } from 'lucide-react';
+import { Edit2, Trash2, ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -22,80 +22,133 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { ColumnDef } from '@tanstack/react-table';
 
 interface UnitTableProps {
     units: Unit[];
     isLoading: boolean;
     onEdit: (unit: Unit) => void;
     onDelete: (id: string) => void;
+    onSelectionChange?: (selectedUnits: Unit[]) => void;
 }
 
-export function UnitTable({ units, isLoading, onEdit, onDelete }: UnitTableProps) {
-    if (isLoading) {
-        return <div className="text-center py-4">Loading...</div>;
-    }
+export function UnitTable({ units, isLoading, onEdit, onDelete, onSelectionChange }: UnitTableProps) {
+    const columns: ColumnDef<Unit>[] = [
+        createSelectColumn<Unit>(),
+        {
+            accessorKey: "code",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        className="-ml-4"
+                    >
+                        Code
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                );
+            },
+            cell: ({ row }) => <span className="font-medium">{row.getValue("code")}</span>,
+        },
+        {
+            accessorKey: "name",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        className="-ml-4"
+                    >
+                        Name
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                );
+            },
+            cell: ({ row }) => row.getValue("name"),
+        },
+        {
+            accessorKey: "createdAt",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                        className="-ml-4"
+                    >
+                        Created At
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                );
+            },
+            cell: ({ row }) => {
+                const date = new Date(row.getValue("createdAt"));
+                return date.toLocaleDateString();
+            },
+        },
+        {
+            id: "actions",
+            header: () => <span className="text-right">Actions</span>,
+            cell: ({ row }) => {
+                const unit = row.original;
+                return (
+                    <div className="text-right">
+                        <AlertDialog>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                        <span className="sr-only">Open menu</span>
+                                        <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                    <DropdownMenuItem onClick={() => onEdit(unit)}>
+                                        <Edit2 className="mr-2 h-4 w-4" />
+                                        Edit
+                                    </DropdownMenuItem>
+                                    <AlertDialogTrigger asChild>
+                                        <DropdownMenuItem className="text-destructive focus:text-destructive">
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            Delete
+                                        </DropdownMenuItem>
+                                    </AlertDialogTrigger>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
 
-    if (units.length === 0) {
-        return <div className="text-center py-4 text-muted-foreground">No units found.</div>;
-    }
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently delete the unit{' '}
+                                        <span className="font-medium">{unit.name}</span>.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                        onClick={() => onDelete(unit.id)}
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                        Delete
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </div>
+                );
+            },
+            enableHiding: false,
+        },
+    ];
 
     return (
-        <div className="border rounded-md">
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead>Code</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Created At</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {units.map((unit) => (
-                        <TableRow key={unit.id}>
-                            <TableCell className="font-medium">{unit.code}</TableCell>
-                            <TableCell>{unit.name}</TableCell>
-                            <TableCell>{new Date(unit.createdAt).toLocaleDateString()}</TableCell>
-                            <TableCell className="text-right space-x-2">
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={() => onEdit(unit)}
-                                    title="Edit"
-                                >
-                                    <Edit2 className="h-4 w-4" />
-                                </Button>
-
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <Button variant="ghost" size="icon" className="text-destructive" title="Delete">
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                This action cannot be undone. This will permanently delete the unit{' '}
-                                                <span className="font-medium">{unit.name}</span>.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction
-                                                onClick={() => onDelete(unit.id)}
-                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                            >
-                                                Delete
-                                            </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </div>
+        <DataTable
+            columns={columns}
+            data={units}
+            isLoading={isLoading}
+            searchPlaceholder="Search units..."
+            onRowSelectionChange={onSelectionChange}
+        />
     );
 }
