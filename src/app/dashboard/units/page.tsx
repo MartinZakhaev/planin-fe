@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useUnits } from '@/hooks/use-units';
 import { UnitTable } from './components/unit-table';
 import { UnitDialog } from './components/unit-dialog';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Box, CheckCircle2, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Unit, CreateUnitDto, UpdateUnitDto } from '@/types/unit';
 import {
@@ -18,6 +18,13 @@ import {
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -92,6 +99,13 @@ export default function UnitsPage() {
         setSelectedUnits(units);
     }, []);
 
+    const activeUnitsCount = useMemo(() => units.length, [units]); // Assuming all are active for now, or filter if there's a status
+    const recentUnitsCount = useMemo(() => {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        return units.filter(u => new Date(u.createdAt) > thirtyDaysAgo).length;
+    }, [units]);
+
     return (
         <SidebarInset>
             <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
@@ -111,58 +125,110 @@ export default function UnitsPage() {
                     </Breadcrumb>
                 </div>
             </header>
-            <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold tracking-tight">Units</h1>
-                    <div className="flex items-center gap-2">
-                        {selectedUnits.length > 0 && (
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button variant="destructive" disabled={isBulkDeleting}>
-                                        <Trash2 className="mr-2 h-4 w-4" />
-                                        Delete ({selectedUnits.length})
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete selected units?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            This action cannot be undone. This will permanently delete{' '}
-                                            <span className="font-medium">{selectedUnits.length} unit(s)</span>.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction
-                                            onClick={handleBulkDelete}
-                                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                        >
-                                            Delete All
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        )}
-                        <Button onClick={handleOpenCreate}>
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add Unit
-                        </Button>
-                    </div>
+            <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
+                <div className="grid gap-4 md:grid-cols-3">
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">
+                                Total Units
+                            </CardTitle>
+                            <Box className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{units.length}</div>
+                            <p className="text-xs text-muted-foreground">
+                                +{recentUnitsCount} from last month
+                            </p>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">
+                                Active Units
+                            </CardTitle>
+                            <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{activeUnitsCount}</div>
+                            <p className="text-xs text-muted-foreground">
+                                Currently active in system
+                            </p>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">
+                                Recently Added
+                            </CardTitle>
+                            <Clock className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{recentUnitsCount}</div>
+                            <p className="text-xs text-muted-foreground">
+                                In the last 30 days
+                            </p>
+                        </CardContent>
+                    </Card>
                 </div>
 
-                {error && (
-                    <div className="bg-destructive/15 text-destructive p-3 rounded-md text-sm">
-                        Error: {error}
-                    </div>
-                )}
-
-                <UnitTable
-                    units={units}
-                    isLoading={isLoading}
-                    onEdit={handleOpenEdit}
-                    onDelete={handleDelete}
-                    onSelectionChange={handleSelectionChange}
-                />
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                        <div className="space-y-1">
+                            <CardTitle>All Units</CardTitle>
+                            <CardDescription>
+                                Manage your system units here.
+                            </CardDescription>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {selectedUnits.length > 0 && (
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button variant="destructive" disabled={isBulkDeleting} size="sm">
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            Delete ({selectedUnits.length})
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Delete selected units?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                This action cannot be undone. This will permanently delete{' '}
+                                                <span className="font-medium">{selectedUnits.length} unit(s)</span>.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={handleBulkDelete}
+                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                            >
+                                                Delete All
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            )}
+                            <Button onClick={handleOpenCreate} size="sm">
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add Unit
+                            </Button>
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        {error && (
+                            <div className="bg-destructive/15 text-destructive mb-4 p-3 rounded-md text-sm">
+                                Error: {error}
+                            </div>
+                        )}
+                        <UnitTable
+                            units={units}
+                            isLoading={isLoading}
+                            onEdit={handleOpenEdit}
+                            onDelete={handleDelete}
+                            onSelectionChange={handleSelectionChange}
+                        />
+                    </CardContent>
+                </Card>
 
                 <UnitDialog
                     unit={selectedUnit}
