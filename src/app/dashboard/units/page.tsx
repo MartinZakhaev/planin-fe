@@ -5,7 +5,7 @@ import { useUnits } from '@/hooks/use-units';
 import { UnitTable } from './components/unit-table';
 import { UnitDialog } from './components/unit-dialog';
 import { Button } from '@/components/ui/button';
-import { Plus, Trash2, Box, CheckCircle2, Clock } from 'lucide-react';
+import { Plus, Trash2, Box, CheckCircle2, Clock, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { Unit, CreateUnitDto, UpdateUnitDto } from '@/types/unit';
 import {
@@ -25,17 +25,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import { ActionDialog } from '@/components/action-dialog';
 
 export default function UnitsPage() {
     const { units, isLoading, error, createUnit, updateUnit, deleteUnit, refreshUnits } = useUnits();
@@ -43,6 +33,8 @@ export default function UnitsPage() {
     const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
     const [selectedUnits, setSelectedUnits] = useState<Unit[]>([]);
     const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+    // Explicit state for bulk delete confirmation to use ActionDialog properly
+    const [showBulkDelete, setShowBulkDelete] = useState(false);
 
     const handleOpenCreate = () => {
         setSelectedUnit(null);
@@ -87,6 +79,7 @@ export default function UnitsPage() {
             await Promise.all(deletePromises);
             toast.success(`${selectedUnits.length} unit(s) deleted successfully`);
             setSelectedUnits([]);
+            setShowBulkDelete(false); // Close dialog
             refreshUnits();
         } catch (err: any) {
             toast.error(err.message || 'Failed to delete some units');
@@ -181,32 +174,15 @@ export default function UnitsPage() {
                         </div>
                         <div className="flex items-center gap-2">
                             {selectedUnits.length > 0 && (
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <Button variant="destructive" disabled={isBulkDeleting} size="sm">
-                                            <Trash2 className="mr-2 h-4 w-4" />
-                                            Delete ({selectedUnits.length})
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                            <AlertDialogTitle>Delete selected units?</AlertDialogTitle>
-                                            <AlertDialogDescription>
-                                                This action cannot be undone. This will permanently delete{' '}
-                                                <span className="font-medium">{selectedUnits.length} unit(s)</span>.
-                                            </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction
-                                                onClick={handleBulkDelete}
-                                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                            >
-                                                Delete All
-                                            </AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
+                                <Button
+                                    variant="destructive"
+                                    disabled={isBulkDeleting}
+                                    size="sm"
+                                    onClick={() => setShowBulkDelete(true)}
+                                >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete ({selectedUnits.length})
+                                </Button>
                             )}
                             <Button onClick={handleOpenCreate} size="sm">
                                 <Plus className="mr-2 h-4 w-4" />
@@ -235,6 +211,24 @@ export default function UnitsPage() {
                     open={isDialogOpen}
                     onOpenChange={setIsDialogOpen}
                     onSubmit={handleSubmit}
+                />
+
+                <ActionDialog
+                    open={showBulkDelete}
+                    onOpenChange={setShowBulkDelete}
+                    type="warning"
+                    title="Delete selected units?"
+                    description={
+                        <>
+                            This action cannot be undone. This will permanently delete{' '}
+                            <span className="font-medium">{selectedUnits.length} unit(s)</span>.
+                        </>
+                    }
+                    onConfirm={handleBulkDelete}
+                    confirmLabel="Delete All"
+                    isLoading={isBulkDeleting}
+                    icon={<AlertTriangle className="h-6 w-6 text-destructive" />}
+                    iconPosition="left"
                 />
             </div>
         </SidebarInset>

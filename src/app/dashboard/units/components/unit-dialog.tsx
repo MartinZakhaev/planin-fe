@@ -2,18 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { CreateUnitDto, UpdateUnitDto, Unit } from '@/types/unit';
-import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
+import { Ruler } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ActionDialog } from '@/components/action-dialog';
 
 interface UnitDialogProps {
     unit?: Unit | null;
@@ -43,8 +35,7 @@ export function UnitDialog({ unit, open, onOpenChange, onSubmit }: UnitDialogPro
         }
     }, [unit, open]);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
         setLoading(true);
         try {
             await onSubmit(formData);
@@ -57,48 +48,49 @@ export function UnitDialog({ unit, open, onOpenChange, onSubmit }: UnitDialogPro
     };
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                    <DialogTitle>{unit ? 'Edit Unit' : 'Create Unit'}</DialogTitle>
-                    <DialogDescription>
-                        {unit ? 'Update the unit details below.' : 'Add a new unit to the system.'}
-                    </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleSubmit}>
-                    <div className="grid gap-4 py-4">
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="code" className="text-right">
-                                Code
-                            </Label>
-                            <Input
-                                id="code"
-                                value={formData.code}
-                                onChange={(e) => setFormData({ ...formData, code: e.target.value })}
-                                className="col-span-3"
-                                required
-                            />
-                        </div>
-                        <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="name" className="text-right">
-                                Name
-                            </Label>
-                            <Input
-                                id="name"
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                className="col-span-3"
-                                required
-                            />
-                        </div>
-                    </div>
-                    <DialogFooter>
-                        <Button type="submit" disabled={loading}>
-                            {loading ? 'Saving...' : 'Save changes'}
-                        </Button>
-                    </DialogFooter>
-                </form>
-            </DialogContent>
-        </Dialog>
+        <ActionDialog
+            open={open}
+            onOpenChange={onOpenChange}
+            type={unit ? 'edit' : 'create'}
+            title={unit ? 'Edit Unit' : 'Create New Unit'}
+            description={unit ? 'Update the details of this measurement unit.' : 'Add a new measurement unit to your inventory system.'}
+            icon={<Ruler className="h-5 w-5 text-primary" />}
+            iconPosition="left"
+            items-center
+            onConfirm={handleSubmit}
+            isLoading={loading}
+            disabled={loading}
+            className="sm:max-w-[480px]"
+        >
+            <div className="flex flex-col gap-4 py-4">
+                <div className="space-y-2">
+                    <Label htmlFor="code" className="text-sm font-medium">
+                        Unit Code
+                    </Label>
+                    <Input
+                        id="code"
+                        placeholder="e.g. 'm2', 'kg'"
+                        value={formData.code}
+                        onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                        className="h-10"
+                        autoFocus={!unit}
+                        required
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="name" className="text-sm font-medium">
+                        Unit Name
+                    </Label>
+                    <Input
+                        id="name"
+                        placeholder="e.g. 'Square Meter', 'Kilogram'"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        className="h-10"
+                        required
+                    />
+                </div>
+            </div>
+        </ActionDialog>
     );
 }

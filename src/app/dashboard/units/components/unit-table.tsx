@@ -1,9 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import { Unit } from '@/types/unit';
 import { DataTable, createSelectColumn } from '@/components/ui/data-table';
 import { Button } from '@/components/ui/button';
-import { Edit2, Trash2, ArrowUpDown, MoreHorizontal } from 'lucide-react';
+import { Edit2, Trash2, ArrowUpDown, MoreHorizontal, AlertTriangle } from 'lucide-react';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -11,17 +12,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import { ActionDialog } from '@/components/action-dialog';
 import { ColumnDef } from '@tanstack/react-table';
 
 interface UnitTableProps {
@@ -33,6 +24,9 @@ interface UnitTableProps {
 }
 
 export function UnitTable({ units, isLoading, onEdit, onDelete, onSelectionChange }: UnitTableProps) {
+    // We need to manage state for the delete dialog here because it's triggered from a dropdown
+    const [deleteUnit, setDeleteUnit] = useState<Unit | null>(null);
+
     const columns: ColumnDef<Unit>[] = [
         createSelectColumn<Unit>(),
         {
@@ -93,48 +87,28 @@ export function UnitTable({ units, isLoading, onEdit, onDelete, onSelectionChang
                 const unit = row.original;
                 return (
                     <div className="text-right">
-                        <AlertDialog>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="h-8 w-8 p-0">
-                                        <span className="sr-only">Open menu</span>
-                                        <MoreHorizontal className="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                    <DropdownMenuItem onClick={() => onEdit(unit)}>
-                                        <Edit2 className="mr-2 h-4 w-4" />
-                                        Edit
-                                    </DropdownMenuItem>
-                                    <AlertDialogTrigger asChild>
-                                        <DropdownMenuItem className="text-destructive focus:text-destructive">
-                                            <Trash2 className="mr-2 h-4 w-4" />
-                                            Delete
-                                        </DropdownMenuItem>
-                                    </AlertDialogTrigger>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        This action cannot be undone. This will permanently delete the unit{' '}
-                                        <span className="font-medium">{unit.name}</span>.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction
-                                        onClick={() => onDelete(unit.id)}
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                    >
-                                        Delete
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                    <span className="sr-only">Open menu</span>
+                                    <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => onEdit(unit)}>
+                                    <Edit2 className="mr-2 h-4 w-4" />
+                                    Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => setDeleteUnit(unit)}
+                                    className="text-destructive focus:text-destructive"
+                                >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 );
             },
@@ -143,12 +117,38 @@ export function UnitTable({ units, isLoading, onEdit, onDelete, onSelectionChang
     ];
 
     return (
-        <DataTable
-            columns={columns}
-            data={units}
-            isLoading={isLoading}
-            searchPlaceholder="Search units..."
-            onRowSelectionChange={onSelectionChange}
-        />
+        <>
+            <DataTable
+                columns={columns}
+                data={units}
+                isLoading={isLoading}
+                searchPlaceholder="Search units..."
+                onRowSelectionChange={onSelectionChange}
+            />
+
+            <ActionDialog
+                open={!!deleteUnit}
+                onOpenChange={(open) => !open && setDeleteUnit(null)}
+                type="warning"
+                title="Delete Unit?"
+                description={
+                    deleteUnit ? (
+                        <>
+                            This action cannot be undone. This will permanently delete the unit{' '}
+                            <span className="font-medium">{deleteUnit.name}</span>.
+                        </>
+                    ) : undefined
+                }
+                onConfirm={() => {
+                    if (deleteUnit) {
+                        onDelete(deleteUnit.id);
+                        setDeleteUnit(null);
+                    }
+                }}
+                confirmLabel="Delete"
+                icon={<AlertTriangle className="h-6 w-6 text-destructive" />}
+                iconPosition="left"
+            />
+        </>
     );
 }
