@@ -3,6 +3,7 @@ export const BASE_URL = 'http://localhost:3001';
 export async function fetcher<T>(url: string, options?: RequestInit): Promise<T> {
     const res = await fetch(`${BASE_URL}${url}`, {
         ...options,
+        credentials: 'include', // Enable session cookie handling
         headers: {
             'Content-Type': 'application/json',
             ...options?.headers,

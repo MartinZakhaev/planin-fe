@@ -1,5 +1,6 @@
 import { AppSidebar } from "@/components/app-sidebar"
 import { SidebarProvider } from "@/components/ui/sidebar"
+import { ProtectedRoute } from "@/components/protected-route"
 
 export default function DashboardLayout({
     children,
@@ -7,9 +8,11 @@ export default function DashboardLayout({
     children: React.ReactNode
 }) {
     return (
-        <SidebarProvider>
-            <AppSidebar />
-            {children}
-        </SidebarProvider>
+        <ProtectedRoute>
+            <SidebarProvider>
+                <AppSidebar />
+                {children}
+            </SidebarProvider>
+        </ProtectedRoute>
     )
 }
