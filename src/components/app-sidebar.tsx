@@ -1,19 +1,6 @@
 "use client"
 
-import * as React from "react"
-import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  Package,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react"
+import { usePathname } from "next/navigation"
 
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
@@ -25,153 +12,85 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
 } from "@/components/ui/sidebar"
+import {
+  Users,
+  Building2,
+  Briefcase,
+  CreditCard,
+  ClipboardList,
+  FileText,
+  Hammer,
+  Wrench,
+  HardHat,
+  Package
+} from "lucide-react"
 
-// This is sample data.
-const data = {
-  teams: [
-    {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Master Data",
-      url: "#",
-      icon: Package,
-      items: [
-        {
-          title: "Units",
-          url: "/dashboard/units",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
-}
+// Updated menu structure
+const menuGroups = [
+  {
+    label: "Admin & Billing",
+    items: [
+      { title: "Users", url: "/dashboard/users", icon: Users },
+      { title: "Organizations", url: "/dashboard/organizations", icon: Building2 },
+      { title: "Plans", url: "/dashboard/plans", icon: FileText },
+      { title: "Subscriptions", url: "/dashboard/subscriptions", icon: CreditCard },
+      { title: "Audit Logs", url: "/dashboard/audit-logs", icon: ClipboardList },
+    ]
+  },
+  {
+    label: "Master Data",
+    items: [
+      { title: "Units", url: "/dashboard/units", icon: Wrench },
+      { title: "Work Divisions", url: "/dashboard/work-divisions", icon: Briefcase },
+      { title: "Task Catalogs", url: "/dashboard/task-catalogs", icon: ClipboardList },
+      { title: "Item Catalogs", url: "/dashboard/item-catalogs", icon: Package },
+    ]
+  },
+  {
+    label: "Projects",
+    items: [
+      { title: "All Projects", url: "/dashboard/projects", icon: Briefcase },
+    ]
+  }
+];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname();
+
+  // Temporary dummy teams for now
+  const teams = [
+    { name: "Acme Inc", logo: Building2, plan: "Enterprise" },
+  ];
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <TeamSwitcher teams={teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        {menuGroups.map((group) => (
+          <SidebarGroup key={group.label}>
+            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            <SidebarMenu>
+              {group.items.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild isActive={pathname === item.url} tooltip={item.title}>
+                    <a href={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </a>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
       <SidebarFooter>
         <NavUser />
