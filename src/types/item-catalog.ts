@@ -2,11 +2,11 @@ export interface ItemCatalog {
     id: string;
     name: string;
     code: string;
-    type: 'MATERIAL' | 'WAGE' | 'TOOL' | 'SUB_WORK';
-    unit: string;
-    price: number;
+    type: 'MATERIAL' | 'MANPOWER' | 'TOOL';
+    unitId: string;
+    defaultPrice: number;
     description?: string;
-    taskCatalogId?: string; // Optional relation to a task group
+    taskCatalogId?: string;
     taskCatalog?: {
         id: string;
         name: string;
@@ -19,19 +19,17 @@ export interface ItemCatalog {
 export interface CreateItemCatalogDto {
     name: string;
     code: string;
-    type: 'MATERIAL' | 'WAGE' | 'TOOL' | 'SUB_WORK';
-    unit: string;
-    price: number;
+    type: 'MATERIAL' | 'MANPOWER' | 'TOOL';
+    unitId: string;
+    defaultPrice: number;
     description?: string;
-    taskCatalogId?: string;
 }
 
 export interface UpdateItemCatalogDto {
     name?: string;
     code?: string;
-    type?: 'MATERIAL' | 'WAGE' | 'TOOL' | 'SUB_WORK';
-    unit?: string;
-    price?: number;
+    type?: 'MATERIAL' | 'MANPOWER' | 'TOOL';
+    unitId?: string;
+    defaultPrice?: number;
     description?: string;
-    taskCatalogId?: string;
 }

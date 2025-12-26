@@ -23,7 +23,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useTaskCatalogs } from "@/hooks/use-task-catalogs";
+import { useUnits } from "@/hooks/use-units";
 
 interface ItemCatalogDialogProps {
     open: boolean;
@@ -34,26 +34,24 @@ interface ItemCatalogDialogProps {
 
 export function ItemCatalogDialog({ open, onOpenChange, itemCatalog, onSubmit }: ItemCatalogDialogProps) {
     const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<CreateItemCatalogDto & UpdateItemCatalogDto>();
-    const { taskCatalogs } = useTaskCatalogs();
+    const { units } = useUnits();
 
     useEffect(() => {
         if (open) {
             if (itemCatalog) {
-                setValue("taskCatalogId", itemCatalog.taskCatalogId);
                 setValue("code", itemCatalog.code);
                 setValue("name", itemCatalog.name);
                 setValue("type", itemCatalog.type);
-                setValue("unit", itemCatalog.unit);
-                setValue("price", itemCatalog.price);
+                setValue("unitId", itemCatalog.unitId);
+                setValue("defaultPrice", itemCatalog.defaultPrice);
                 setValue("description", itemCatalog.description);
             } else {
                 reset({
-                    taskCatalogId: "",
                     code: "",
                     name: "",
                     type: "MATERIAL",
-                    unit: "m2",
-                    price: 0,
+                    unitId: "",
+                    defaultPrice: 0,
                     description: ""
                 });
             }
@@ -74,21 +72,6 @@ export function ItemCatalogDialog({ open, onOpenChange, itemCatalog, onSubmit }:
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit(onFormSubmit)} className="grid gap-4 py-4">
-                    <div className="grid gap-2">
-                        <Label htmlFor="taskCatalogId">Task Group (Optional)</Label>
-                        <Select onValueChange={(val) => setValue("taskCatalogId", val === "none" ? undefined : val)} defaultValue={itemCatalog?.taskCatalogId || "none"}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select Task Group" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="none">-- None --</SelectItem>
-                                {taskCatalogs?.map((task) => (
-                                    <SelectItem key={task.id} value={task.id}>{task.name} ({task.code})</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
                     <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
                             <Label htmlFor="code">Code</Label>
@@ -103,9 +86,8 @@ export function ItemCatalogDialog({ open, onOpenChange, itemCatalog, onSubmit }:
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="MATERIAL">Material</SelectItem>
-                                    <SelectItem value="WAGE">Wage</SelectItem>
+                                    <SelectItem value="MANPOWER">Manpower</SelectItem>
                                     <SelectItem value="TOOL">Tool</SelectItem>
-                                    <SelectItem value="SUB_WORK">Sub Work</SelectItem>
                                 </SelectContent>
                             </Select>
                             {errors.type && <span className="text-destructive text-xs">Required</span>}
@@ -120,18 +102,27 @@ export function ItemCatalogDialog({ open, onOpenChange, itemCatalog, onSubmit }:
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="unit">Unit</Label>
-                            <Input id="unit" {...register("unit", { required: true })} placeholder="kg, m3, hour" />
-                            {errors.unit && <span className="text-destructive text-xs">Required</span>}
+                            <Label htmlFor="unitId">Unit</Label>
+                            <Select onValueChange={(val) => setValue("unitId", val)} defaultValue={itemCatalog?.unitId}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Unit" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {units?.map((unit) => (
+                                        <SelectItem key={unit.id} value={unit.id}>{unit.name} ({unit.code})</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.unitId && <span className="text-destructive text-xs">Required</span>}
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="price">Price (IDR)</Label>
+                            <Label htmlFor="defaultPrice">Price (IDR)</Label>
                             <Input
-                                id="price"
+                                id="defaultPrice"
                                 type="number"
-                                {...register("price", { required: true, valueAsNumber: true })}
+                                {...register("defaultPrice", { required: true, valueAsNumber: true })}
                             />
-                            {errors.price && <span className="text-destructive text-xs">Required</span>}
+                            {errors.defaultPrice && <span className="text-destructive text-xs">Required</span>}
                         </div>
                     </div>
 

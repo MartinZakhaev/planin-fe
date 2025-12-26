@@ -1,25 +1,37 @@
 export interface Subscription {
     id: string;
-    organizationId: string;
+    userId: string;
     planId: string;
-    startDate: string;
-    endDate: string;
     status: 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
-    organization?: {
+    trialEndsAt?: string | null;
+    currentPeriodStart?: string | null;
+    currentPeriodEnd?: string | null;
+    canceledAt?: string | null;
+    createdAt: string;
+    updatedAt: string;
+    // Optional relations if expanded later, but base is raw
+    user?: {
         id: string;
-        name: string;
+        fullName: string;
+        email: string;
     };
     plan?: {
         id: string;
         name: string;
         price: number;
     };
+    organization?: {
+        id: string;
+        name: string;
+    };
 }
 
 export interface CreateSubDto {
-    organizationId: string;
+    userId: string;
     planId: string;
-    startDate: string;
-    endDate: string;
     status: 'ACTIVE' | 'EXPIRED' | 'CANCELLED';
+    trialEndsAt?: string;
+    currentPeriodStart?: string;
+    currentPeriodEnd?: string;
+    canceledAt?: string;
 }

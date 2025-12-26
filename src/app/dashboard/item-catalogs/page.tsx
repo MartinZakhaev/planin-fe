@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { ItemCatalog } from "@/types/item-catalog";
 import { useItemCatalogs } from "@/hooks/use-item-catalogs";
-import { DataTable } from "@/components/ui/data-table";
+import { useUnits } from "@/hooks/use-units";
+import { Plus, Pencil, Trash2, MoreHorizontal, Package, Hammer, Coins, AlertTriangle, ArrowUpDown } from "lucide-react";
+import { DataTable, createSelectColumn } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash2, MoreHorizontal, Package, Hammer, Coins } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -23,8 +24,9 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { ItemCatalogDialog } from "./components/item-catalog-dialog";
 import { ActionDialog } from "@/components/action-dialog";
+import { ItemCatalogTable } from "./components/item-catalog-table";
+import { ItemCatalogDialog } from "./components/item-catalog-dialog";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -37,9 +39,13 @@ import {
 
 export default function ItemCatalogsPage() {
     const { itemCatalogs, isLoading, createItemCatalog, updateItemCatalog, deleteItemCatalog, refreshItemCatalogs } = useItemCatalogs();
+    const { units } = useUnits();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<ItemCatalog | null>(null);
-    const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [selectedItems, setSelectedItems] = useState<ItemCatalog[]>([]);
+
+    const [showBulkDelete, setShowBulkDelete] = useState(false);
+    const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
     const handleCreate = async (data: any) => {
         try {
@@ -65,77 +71,24 @@ export default function ItemCatalogsPage() {
         }
     };
 
-    const handleDelete = async () => {
-        if (!deleteId) return;
+
+
+    const handleBulkDelete = async () => {
+        setIsBulkDeleting(true);
         try {
-            await deleteItemCatalog(deleteId);
-            toast.success("Item Catalog deleted successfully");
-            setDeleteId(null);
+            for (const item of selectedItems) {
+                await deleteItemCatalog(item.id);
+            }
+            toast.success(`${selectedItems.length} items deleted successfully`);
+            setSelectedItems([]);
+            setShowBulkDelete(false);
             refreshItemCatalogs();
         } catch (error: any) {
-            toast.error(error.message);
+            toast.error("Failed to delete some items");
+        } finally {
+            setIsBulkDeleting(false);
         }
     };
-
-    const columns: ColumnDef<ItemCatalog>[] = [
-        {
-            accessorKey: "taskCatalog.name",
-            header: "Task Group",
-            cell: ({ row }) => row.original.taskCatalog?.name || "-"
-        },
-        { accessorKey: "code", header: "Code" },
-        { accessorKey: "name", header: "Name" },
-        {
-            accessorKey: "type",
-            header: "Type",
-            cell: ({ row }) => (
-                <Badge variant={
-                    row.original.type === 'MATERIAL' ? 'default' :
-                        row.original.type === 'WAGE' ? 'secondary' :
-                            'outline'
-                }>
-                    {row.original.type}
-                </Badge>
-            )
-        },
-        { accessorKey: "unit", header: "Unit" },
-        {
-            accessorKey: "price",
-            header: "Price",
-            cell: ({ row }) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(row.original.price)
-        },
-        {
-            id: "actions",
-            cell: ({ row }) => {
-                const item = row.original;
-                return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    setSelectedItem(item);
-                                    setIsDialogOpen(true);
-                                }}
-                            >
-                                <Pencil className="mr-2 h-4 w-4" /> Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                className="text-destructive"
-                                onClick={() => setDeleteId(item.id)}
-                            >
-                                <Trash2 className="mr-2 h-4 w-4" /> Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                );
-            },
-        },
-    ];
 
     return (
         <SidebarInset>
@@ -173,7 +126,7 @@ export default function ItemCatalogsPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">
-                                {itemCatalogs.filter(i => i.type === 'MATERIAL').length} / {itemCatalogs.filter(i => i.type === 'WAGE').length}
+                                {itemCatalogs.filter(i => i.type === 'MATERIAL').length} / {itemCatalogs.filter(i => i.type === 'MANPOWER').length}
                             </div>
                             <p className="text-xs text-muted-foreground">Ratio</p>
                         </CardContent>
@@ -187,7 +140,7 @@ export default function ItemCatalogsPage() {
                             <div className="text-2xl font-bold">
                                 {itemCatalogs.length > 0
                                     ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(
-                                        itemCatalogs.reduce((acc, i) => acc + i.price, 0) / itemCatalogs.length
+                                        itemCatalogs.reduce((acc, i) => acc + Number(i.defaultPrice), 0) / itemCatalogs.length
                                     )
                                     : 0}
                             </div>
@@ -204,12 +157,40 @@ export default function ItemCatalogsPage() {
                                 Manage master resources (Materials, Wages, Tools, Sub-works).
                             </CardDescription>
                         </div>
-                        <Button onClick={() => { setSelectedItem(null); setIsDialogOpen(true); }}>
-                            <Plus className="mr-2 h-4 w-4" /> Add Item
-                        </Button>
+
+                        <div className="flex items-center gap-2">
+                            {selectedItems.length > 0 && (
+                                <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => setShowBulkDelete(true)}
+                                >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete ({selectedItems.length})
+                                </Button>
+                            )}
+                            <Button onClick={() => { setSelectedItem(null); setIsDialogOpen(true); }}>
+                                <Plus className="mr-2 h-4 w-4" /> Add Item
+                            </Button>
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <DataTable columns={columns} data={itemCatalogs} isLoading={isLoading} />
+                        <ItemCatalogTable
+                            itemCatalogs={itemCatalogs}
+                            units={units || []}
+                            isLoading={isLoading}
+                            onEdit={(item) => {
+                                setSelectedItem(item);
+                                setIsDialogOpen(true);
+                            }}
+                            onDelete={(id) => {
+                                deleteItemCatalog(id).then(() => {
+                                    toast.success("Item Catalog deleted successfully");
+                                    refreshItemCatalogs();
+                                }).catch((err) => toast.error(err.message));
+                            }}
+                            onSelectionChange={setSelectedItems}
+                        />
                     </CardContent>
                 </Card>
 
@@ -220,18 +201,22 @@ export default function ItemCatalogsPage() {
                     onSubmit={selectedItem ? handleUpdate : handleCreate}
                 />
 
+
+
                 <ActionDialog
-                    open={!!deleteId}
-                    onOpenChange={(open) => !open && setDeleteId(null)}
-                    title="Delete Item"
-                    description="Are you sure? This resource might be used in projects."
-                    onConfirm={handleDelete}
-                    confirmLabel="Delete"
-                    isLoading={false}
+                    open={showBulkDelete}
+                    onOpenChange={setShowBulkDelete}
+                    title="Delete Selected Items"
+                    description={`Are you sure you want to delete ${selectedItems.length} items? This action cannot be undone.`}
+                    onConfirm={handleBulkDelete}
+                    confirmLabel="Delete All"
+                    isLoading={isBulkDeleting}
                     type="warning"
                     variant="destructive"
+                    icon={<AlertTriangle className="h-6 w-6 text-destructive" />}
+                    iconPosition="left"
                 />
             </div>
-        </SidebarInset>
+        </SidebarInset >
     );
 }

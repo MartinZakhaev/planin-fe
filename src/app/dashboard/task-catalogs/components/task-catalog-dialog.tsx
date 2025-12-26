@@ -42,9 +42,9 @@ export function TaskCatalogDialog({ open, onOpenChange, taskCatalog, onSubmit }:
                 setValue("name", taskCatalog.name);
                 setValue("code", taskCatalog.code);
                 setValue("description", taskCatalog.description);
-                setValue("workDivisionId", taskCatalog.workDivisionId);
+                setValue("divisionId", taskCatalog.divisionId);
             } else {
-                reset({ name: "", code: "", description: "", workDivisionId: "" });
+                reset({ name: "", code: "", description: "", divisionId: "" });
             }
         }
     }, [open, taskCatalog, reset, setValue]);
@@ -64,8 +64,8 @@ export function TaskCatalogDialog({ open, onOpenChange, taskCatalog, onSubmit }:
                 </DialogHeader>
                 <form onSubmit={handleSubmit(onFormSubmit)} className="grid gap-4 py-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="workDivisionId">Work Division</Label>
-                        <Select onValueChange={(val) => setValue("workDivisionId", val)} defaultValue={taskCatalog?.workDivisionId}>
+                        <Label htmlFor="divisionId">Work Division</Label>
+                        <Select onValueChange={(val) => setValue("divisionId", val)} defaultValue={taskCatalog?.divisionId}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Select Division" />
                             </SelectTrigger>
@@ -75,7 +75,7 @@ export function TaskCatalogDialog({ open, onOpenChange, taskCatalog, onSubmit }:
                                 ))}
                             </SelectContent>
                         </Select>
-                        {errors.workDivisionId && <span className="text-destructive text-xs">Required</span>}
+                        {errors.divisionId && <span className="text-destructive text-xs">Required</span>}
                     </div>
 
                     <div className="grid gap-2">

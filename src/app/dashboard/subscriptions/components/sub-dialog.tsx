@@ -22,8 +22,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { useOrganizations } from "@/hooks/use-organizations";
 import { usePlans } from "@/hooks/use-plans";
+import { useUsers } from "@/hooks/use-users";
 
 interface SubDialogProps {
     open: boolean;
@@ -34,32 +34,44 @@ interface SubDialogProps {
 
 export function SubDialog({ open, onOpenChange, subscription, onSubmit }: SubDialogProps) {
     const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<CreateSubDto>();
-    const { organizations } = useOrganizations();
     const { plans } = usePlans();
+    const { users } = useUsers();
 
     useEffect(() => {
         if (open) {
             if (subscription) {
-                setValue("organizationId", subscription.organizationId);
+                setValue("userId", subscription.userId);
                 setValue("planId", subscription.planId);
-                setValue("startDate", subscription.startDate.split('T')[0]);
-                setValue("endDate", subscription.endDate.split('T')[0]);
                 setValue("status", subscription.status);
+                setValue("trialEndsAt", subscription.trialEndsAt ? subscription.trialEndsAt.split('T')[0] : "");
+                setValue("currentPeriodStart", subscription.currentPeriodStart ? subscription.currentPeriodStart.split('T')[0] : "");
+                setValue("currentPeriodEnd", subscription.currentPeriodEnd ? subscription.currentPeriodEnd.split('T')[0] : "");
+                setValue("canceledAt", subscription.canceledAt ? subscription.canceledAt.split('T')[0] : "");
             } else {
                 reset({
-                    organizationId: "",
+                    userId: "",
                     planId: "",
-                    startDate: new Date().toISOString().split('T')[0],
-                    endDate: "",
-                    status: "ACTIVE"
+                    status: "ACTIVE",
+                    trialEndsAt: "",
+                    currentPeriodStart: new Date().toISOString().split('T')[0],
+                    currentPeriodEnd: "",
+                    canceledAt: ""
                 });
             }
         }
     }, [open, subscription, reset, setValue]);
 
     const onFormSubmit = async (data: any) => {
-        // Ensure dates are properly formatted if needed by backend, simple string YYYY-MM-DD usually fine
-        await onSubmit(data);
+        // Sanitize empty strings to undefined/null for Prisma
+        const payload = {
+            ...data,
+            // Convert empty strings to undefined so they are not sent, or null if explicit clear is needed (but for create, undefined is safer)
+            trialEndsAt: data.trialEndsAt ? new Date(data.trialEndsAt).toISOString() : undefined,
+            currentPeriodStart: data.currentPeriodStart ? new Date(data.currentPeriodStart).toISOString() : undefined,
+            currentPeriodEnd: data.currentPeriodEnd ? new Date(data.currentPeriodEnd).toISOString() : undefined,
+            canceledAt: data.canceledAt ? new Date(data.canceledAt).toISOString() : undefined,
+        };
+        await onSubmit(payload);
     };
 
     return (
@@ -72,19 +84,21 @@ export function SubDialog({ open, onOpenChange, subscription, onSubmit }: SubDia
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit(onFormSubmit)} className="grid gap-4 py-4">
+
+
                     <div className="grid gap-2">
-                        <Label htmlFor="organizationId">Organization</Label>
-                        <Select onValueChange={(val) => setValue("organizationId", val)} defaultValue={subscription?.organizationId}>
+                        <Label htmlFor="userId">User (Owner)</Label>
+                        <Select onValueChange={(val) => setValue("userId", val)} defaultValue={subscription?.userId}>
                             <SelectTrigger>
-                                <SelectValue placeholder="Select Organization" />
+                                <SelectValue placeholder="Select User" />
                             </SelectTrigger>
                             <SelectContent>
-                                {organizations?.map((org) => (
-                                    <SelectItem key={org.id} value={org.id}>{org.name}</SelectItem>
+                                {users?.map((user) => (
+                                    <SelectItem key={user.id} value={user.id}>{user.fullName} ({user.email})</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>
-                        {errors.organizationId && <span className="text-destructive text-xs">Required</span>}
+                        {errors.userId && <span className="text-destructive text-xs">Required</span>}
                     </div>
 
                     <div className="grid gap-2">
@@ -106,14 +120,27 @@ export function SubDialog({ open, onOpenChange, subscription, onSubmit }: SubDia
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="startDate">Start Date</Label>
-                            <Input id="startDate" type="date" {...register("startDate", { required: true })} />
+                            <Label htmlFor="currentPeriodStart">Period Start</Label>
+                            <Input id="currentPeriodStart" type="date" {...register("currentPeriodStart")} />
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="endDate">End Date</Label>
-                            <Input id="endDate" type="date" {...register("endDate", { required: true })} />
+                            <Label htmlFor="currentPeriodEnd">Period End</Label>
+                            <Input id="currentPeriodEnd" type="date" {...register("currentPeriodEnd")} />
                         </div>
                     </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="trialEndsAt">Trial Ends (Optional)</Label>
+                            <Input id="trialEndsAt" type="date" {...register("trialEndsAt")} />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="canceledAt">Canceled At (Optional)</Label>
+                            <Input id="canceledAt" type="date" {...register("canceledAt")} />
+                        </div>
+                    </div>
+
+
 
                     <div className="grid gap-2">
                         <Label htmlFor="status">Status</Label>

@@ -6,7 +6,7 @@ import { usePlans } from "@/hooks/use-plans";
 import { DataTable, createSelectColumn } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash2, MoreHorizontal, AlertTriangle } from "lucide-react";
+import { Plus, Pencil, Trash2, MoreHorizontal, AlertTriangle, ArrowUpDown } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { PlanDialog } from "./components/plan-dialog";
 import { ActionDialog } from "@/components/action-dialog";
+import { PlanTable } from "./components/plan-table";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { FileText, CreditCard } from "lucide-react";
@@ -41,7 +42,7 @@ export default function PlansPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
     const [selectedPlans, setSelectedPlans] = useState<Plan[]>([]);
-    const [deleteId, setDeleteId] = useState<string | null>(null);
+
     const [showBulkDelete, setShowBulkDelete] = useState(false);
     const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
@@ -69,17 +70,7 @@ export default function PlansPage() {
         }
     };
 
-    const handleDelete = async () => {
-        if (!deleteId) return;
-        try {
-            await deletePlan(deleteId);
-            toast.success("Plan deleted successfully");
-            setDeleteId(null);
-            refreshPlans();
-        } catch (error: any) {
-            toast.error(error.message);
-        }
-    };
+
 
     const handleBulkDelete = async () => {
         setIsBulkDeleting(true);
@@ -98,50 +89,7 @@ export default function PlansPage() {
         }
     };
 
-    const columns: ColumnDef<Plan>[] = [
-        createSelectColumn<Plan>(),
-        { accessorKey: "code", header: "Code" },
-        { accessorKey: "name", header: "Name" },
-        {
-            accessorKey: "priceCents",
-            header: "Price",
-            cell: ({ row }) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: row.original.currency }).format(row.original.priceCents)
-        },
-        { accessorKey: "interval", header: "Interval" },
-        { accessorKey: "maxProjects", header: "Projects" },
 
-        {
-            id: "actions",
-            cell: ({ row }) => {
-                const plan = row.original;
-                return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    setSelectedPlan(plan);
-                                    setIsDialogOpen(true);
-                                }}
-                            >
-                                <Pencil className="mr-2 h-4 w-4" /> Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                className="text-destructive"
-                                onClick={() => setDeleteId(plan.id)}
-                            >
-                                <Trash2 className="mr-2 h-4 w-4" /> Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                );
-            },
-        },
-    ];
 
     return (
         <SidebarInset>
@@ -217,11 +165,20 @@ export default function PlansPage() {
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <DataTable
-                            columns={columns}
-                            data={plans}
+                        <PlanTable
+                            plans={plans}
                             isLoading={isLoading}
-                            onRowSelectionChange={setSelectedPlans}
+                            onEdit={(plan) => {
+                                setSelectedPlan(plan);
+                                setIsDialogOpen(true);
+                            }}
+                            onDelete={(id) => {
+                                deletePlan(id).then(() => {
+                                    toast.success("Plan deleted successfully");
+                                    refreshPlans();
+                                }).catch((err) => toast.error(err.message));
+                            }}
+                            onSelectionChange={setSelectedPlans}
                         />
                     </CardContent>
                 </Card>
@@ -233,17 +190,7 @@ export default function PlansPage() {
                     onSubmit={selectedPlan ? handleUpdate : handleCreate}
                 />
 
-                <ActionDialog
-                    open={!!deleteId}
-                    onOpenChange={(open) => !open && setDeleteId(null)}
-                    title="Delete Plan"
-                    description="Are you sure? Existing subscriptions might be affected."
-                    onConfirm={handleDelete}
-                    confirmLabel="Delete"
-                    isLoading={false}
-                    type="warning"
-                    variant="destructive"
-                />
+
 
                 <ActionDialog
                     open={showBulkDelete}

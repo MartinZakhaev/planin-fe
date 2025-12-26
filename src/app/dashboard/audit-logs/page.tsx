@@ -2,8 +2,8 @@
 
 import { AuditLog } from "@/types/audit-log";
 import { useAuditLogs } from "@/hooks/use-audit-logs";
-import { DataTable } from "@/components/ui/data-table";
-import { ColumnDef } from "@tanstack/react-table";
+import { AuditLogTable } from "./components/audit-log-table";
+
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -25,33 +25,7 @@ import {
 export default function AuditLogsPage() {
     const { auditLogs, isLoading } = useAuditLogs();
 
-    const columns: ColumnDef<AuditLog>[] = [
-        {
-            accessorKey: "user.fullName",
-            header: "User",
-            cell: ({ row }) => row.original.user?.fullName || row.original.userId
-        },
-        { accessorKey: "action", header: "Action" },
-        { accessorKey: "resource", header: "Resource" },
-        { accessorKey: "ipAddress", header: "IP Address" },
-        {
-            accessorKey: "createdAt",
-            header: "Timestamp",
-            cell: ({ row }) => new Date(row.original.createdAt).toLocaleString(),
-        },
-        {
-            accessorKey: "details",
-            header: "Details",
-            cell: ({ row }) => {
-                const details = row.original.details;
-                return details ? (
-                    <pre className="text-xs max-w-[200px] overflow-hidden truncate">
-                        {JSON.stringify(details)}
-                    </pre>
-                ) : "-";
-            }
-        },
-    ];
+
 
     return (
         <SidebarInset>
@@ -118,7 +92,7 @@ export default function AuditLogsPage() {
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <DataTable columns={columns} data={auditLogs} isLoading={isLoading} />
+                        <AuditLogTable auditLogs={auditLogs} isLoading={isLoading} />
                     </CardContent>
                 </Card>
             </div>

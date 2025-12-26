@@ -6,7 +6,7 @@ import { useSubscriptions } from "@/hooks/use-subscriptions";
 import { DataTable, createSelectColumn } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash2, MoreHorizontal, AlertTriangle } from "lucide-react";
+import { Plus, Pencil, Trash2, MoreHorizontal, AlertTriangle, ArrowUpDown } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { SubDialog } from "./components/sub-dialog";
 import { ActionDialog } from "@/components/action-dialog";
+import { SubscriptionTable } from "./components/subscription-table";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, XCircle } from "lucide-react";
@@ -41,7 +42,7 @@ export default function SubscriptionsPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedSub, setSelectedSub] = useState<Subscription | null>(null);
     const [selectedSubs, setSelectedSubs] = useState<Subscription[]>([]);
-    const [deleteId, setDeleteId] = useState<string | null>(null);
+
     const [showBulkDelete, setShowBulkDelete] = useState(false);
     const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
@@ -69,17 +70,7 @@ export default function SubscriptionsPage() {
         }
     };
 
-    const handleDelete = async () => {
-        if (!deleteId) return;
-        try {
-            await deleteSubscription(deleteId);
-            toast.success("Subscription deleted successfully");
-            setDeleteId(null);
-            refreshSubscriptions();
-        } catch (error: any) {
-            toast.error(error.message);
-        }
-    };
+
 
     const handleBulkDelete = async () => {
         setIsBulkDeleting(true);
@@ -98,72 +89,7 @@ export default function SubscriptionsPage() {
         }
     };
 
-    const columns: ColumnDef<Subscription>[] = [
-        createSelectColumn<Subscription>(),
-        {
-            accessorKey: "organization.name",
-            header: "Organization",
-            cell: ({ row }) => row.original.organization?.name || "N/A"
-        },
-        {
-            accessorKey: "plan.name",
-            header: "Plan",
-            cell: ({ row }) => row.original.plan?.name || "N/A"
-        },
-        {
-            accessorKey: "status",
-            header: "Status",
-            cell: ({ row }) => {
-                const status = row.original.status;
-                return (
-                    <Badge variant={status === 'ACTIVE' ? 'default' : 'destructive'}>
-                        {status}
-                    </Badge>
-                )
-            }
-        },
-        {
-            accessorKey: "startDate",
-            header: "Start Date",
-            cell: ({ row }) => new Date(row.original.startDate).toLocaleDateString()
-        },
-        {
-            accessorKey: "endDate",
-            header: "End Date",
-            cell: ({ row }) => new Date(row.original.endDate).toLocaleDateString()
-        },
-        {
-            id: "actions",
-            cell: ({ row }) => {
-                const sub = row.original;
-                return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    setSelectedSub(sub);
-                                    setIsDialogOpen(true);
-                                }}
-                            >
-                                <Pencil className="mr-2 h-4 w-4" /> Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                className="text-destructive"
-                                onClick={() => setDeleteId(sub.id)}
-                            >
-                                <Trash2 className="mr-2 h-4 w-4" /> Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                );
-            },
-        },
-    ];
+
 
     return (
         <SidebarInset>
@@ -205,7 +131,8 @@ export default function SubscriptionsPage() {
                             <div className="text-2xl font-bold">
                                 {subscriptions.filter(s => {
                                     if (s.status !== 'ACTIVE') return false;
-                                    const expiry = new Date(s.endDate);
+                                    if (!s.currentPeriodEnd) return false;
+                                    const expiry = new Date(s.currentPeriodEnd);
                                     const now = new Date();
                                     const diffDays = Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
                                     return diffDays <= 30 && diffDays > 0;
@@ -254,11 +181,20 @@ export default function SubscriptionsPage() {
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <DataTable
-                            columns={columns}
-                            data={subscriptions}
+                        <SubscriptionTable
+                            subscriptions={subscriptions}
                             isLoading={isLoading}
-                            onRowSelectionChange={setSelectedSubs}
+                            onEdit={(sub) => {
+                                setSelectedSub(sub);
+                                setIsDialogOpen(true);
+                            }}
+                            onDelete={(id) => {
+                                deleteSubscription(id).then(() => {
+                                    toast.success("Subscription canceled/deleted successfully");
+                                    refreshSubscriptions();
+                                }).catch((err) => toast.error(err.message));
+                            }}
+                            onSelectionChange={setSelectedSubs}
                         />
                     </CardContent>
                 </Card>
@@ -270,17 +206,7 @@ export default function SubscriptionsPage() {
                     onSubmit={selectedSub ? handleUpdate : handleCreate}
                 />
 
-                <ActionDialog
-                    open={!!deleteId}
-                    onOpenChange={(open) => !open && setDeleteId(null)}
-                    title="Delete Subscription"
-                    description="Are you sure? This action cannot be undone."
-                    onConfirm={handleDelete}
-                    confirmLabel="Delete"
-                    isLoading={false}
-                    type="warning"
-                    variant="destructive"
-                />
+
 
                 <ActionDialog
                     open={showBulkDelete}

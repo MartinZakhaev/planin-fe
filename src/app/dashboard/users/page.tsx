@@ -6,7 +6,7 @@ import { useUsers } from "@/hooks/use-users";
 import { DataTable, createSelectColumn } from "@/components/ui/data-table"; // Assuming generic table exists or will be created
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash2, MoreHorizontal, AlertTriangle } from "lucide-react";
+import { Plus, Pencil, Trash2, MoreHorizontal, AlertTriangle, ArrowUpDown } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -23,8 +23,9 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { UserDialog } from "./components/user-dialog";
 import { ActionDialog } from "@/components/action-dialog";
+import { UserTable } from "./components/user-table";
+import { UserDialog } from "./components/user-dialog";
 import { toast } from "sonner";
 import { Users as UsersIcon, ShieldCheck, Clock } from "lucide-react";
 import {
@@ -40,7 +41,7 @@ export default function UsersPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
-    const [deleteId, setDeleteId] = useState<string | null>(null);
+
     const [showBulkDelete, setShowBulkDelete] = useState(false);
     const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
@@ -68,17 +69,7 @@ export default function UsersPage() {
         }
     };
 
-    const handleDelete = async () => {
-        if (!deleteId) return;
-        try {
-            await deleteUser(deleteId);
-            toast.success("User deleted successfully");
-            setDeleteId(null);
-            refreshUsers();
-        } catch (error: any) {
-            toast.error(error.message);
-        }
-    };
+
 
     const handleBulkDelete = async () => {
         setIsBulkDeleting(true);
@@ -98,49 +89,7 @@ export default function UsersPage() {
         }
     };
 
-    // Columns definition
-    const columns: ColumnDef<User>[] = [
-        createSelectColumn<User>(),
-        { accessorKey: "fullName", header: "Name" },
-        { accessorKey: "email", header: "Email" },
-        { accessorKey: "role", header: "Role" },
-        {
-            accessorKey: "createdAt",
-            header: "Joined",
-            cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString(),
-        },
-        {
-            id: "actions",
-            cell: ({ row }) => {
-                const user = row.original;
-                return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    setSelectedUser(user);
-                                    setIsDialogOpen(true);
-                                }}
-                            >
-                                <Pencil className="mr-2 h-4 w-4" /> Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                className="text-destructive"
-                                onClick={() => setDeleteId(user.id)}
-                            >
-                                <Trash2 className="mr-2 h-4 w-4" /> Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                );
-            },
-        },
-    ];
+
 
     return (
         <SidebarInset>
@@ -223,32 +172,28 @@ export default function UsersPage() {
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <DataTable
-                            columns={columns}
-                            data={users}
+                        <UserTable
+                            users={users}
                             isLoading={isLoading}
-                            onRowSelectionChange={setSelectedUsers}
+                            onEdit={(user) => {
+                                setSelectedUser(user);
+                                setIsDialogOpen(true);
+                            }}
+                            onDelete={(id) => {
+                                deleteUser(id).then(() => {
+                                    toast.success("User deleted successfully");
+                                    refreshUsers();
+                                }).catch((err) => toast.error(err.message));
+                            }}
+                            onSelectionChange={setSelectedUsers}
                         />
                     </CardContent>
                 </Card>
-
                 <UserDialog
                     open={isDialogOpen}
                     onOpenChange={setIsDialogOpen}
                     user={selectedUser}
                     onSubmit={selectedUser ? handleUpdate : handleCreate}
-                />
-
-                <ActionDialog
-                    open={!!deleteId}
-                    onOpenChange={(open) => !open && setDeleteId(null)}
-                    title="Delete User"
-                    description="Are you sure? This action cannot be undone."
-                    onConfirm={handleDelete}
-                    confirmLabel="Delete"
-                    isLoading={false}
-                    type="warning"
-                    variant="destructive"
                 />
 
                 <ActionDialog

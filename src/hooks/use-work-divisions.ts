@@ -6,7 +6,7 @@ export function useWorkDivisions() {
         WorkDivision,
         CreateWorkDivisionDto,
         UpdateWorkDivisionDto
-    >('/work-divisions');
+    >('/work-division-catalogs');
 
     return {
         workDivisions: items,

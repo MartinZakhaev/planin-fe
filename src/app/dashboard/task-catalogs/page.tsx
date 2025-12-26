@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { TaskCatalog } from "@/types/task-catalog";
 import { useTaskCatalogs } from "@/hooks/use-task-catalogs";
-import { DataTable } from "@/components/ui/data-table";
+import { Plus, Pencil, Trash2, MoreHorizontal, ClipboardList, CheckSquare, LayoutList, AlertTriangle, ArrowUpDown } from "lucide-react";
+import { DataTable, createSelectColumn } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash2, MoreHorizontal, ClipboardList, CheckSquare, LayoutList } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -23,8 +23,9 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { TaskCatalogDialog } from "./components/task-catalog-dialog";
 import { ActionDialog } from "@/components/action-dialog";
+import { TaskCatalogTable } from "./components/task-catalog-table";
+import { TaskCatalogDialog } from "./components/task-catalog-dialog";
 import { toast } from "sonner";
 import {
     Card,
@@ -34,11 +35,17 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
+import { useWorkDivisions } from "@/hooks/use-work-divisions";
+
 export default function TaskCatalogsPage() {
     const { taskCatalogs, isLoading, createTaskCatalog, updateTaskCatalog, deleteTaskCatalog, refreshTaskCatalogs } = useTaskCatalogs();
+    const { workDivisions } = useWorkDivisions();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedTask, setSelectedTask] = useState<TaskCatalog | null>(null);
-    const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [selectedTasks, setSelectedTasks] = useState<TaskCatalog[]>([]);
+
+    const [showBulkDelete, setShowBulkDelete] = useState(false);
+    const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
     const handleCreate = async (data: any) => {
         try {
@@ -64,59 +71,24 @@ export default function TaskCatalogsPage() {
         }
     };
 
-    const handleDelete = async () => {
-        if (!deleteId) return;
+
+
+    const handleBulkDelete = async () => {
+        setIsBulkDeleting(true);
         try {
-            await deleteTaskCatalog(deleteId);
-            toast.success("Task Catalog deleted successfully");
-            setDeleteId(null);
+            for (const task of selectedTasks) {
+                await deleteTaskCatalog(task.id);
+            }
+            toast.success(`${selectedTasks.length} tasks deleted successfully`);
+            setSelectedTasks([]);
+            setShowBulkDelete(false);
             refreshTaskCatalogs();
         } catch (error: any) {
-            toast.error(error.message);
+            toast.error("Failed to delete some task catalogs");
+        } finally {
+            setIsBulkDeleting(false);
         }
     };
-
-    const columns: ColumnDef<TaskCatalog>[] = [
-        {
-            accessorKey: "workDivision.name",
-            header: "Division",
-            cell: ({ row }) => row.original.workDivision?.name || "N/A"
-        },
-        { accessorKey: "code", header: "Code" },
-        { accessorKey: "name", header: "Name" },
-        { accessorKey: "description", header: "Description" },
-        {
-            id: "actions",
-            cell: ({ row }) => {
-                const task = row.original;
-                return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    setSelectedTask(task);
-                                    setIsDialogOpen(true);
-                                }}
-                            >
-                                <Pencil className="mr-2 h-4 w-4" /> Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                className="text-destructive"
-                                onClick={() => setDeleteId(task.id)}
-                            >
-                                <Trash2 className="mr-2 h-4 w-4" /> Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                );
-            },
-        },
-    ];
 
     return (
         <SidebarInset>
@@ -154,7 +126,7 @@ export default function TaskCatalogsPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">
-                                {new Set(taskCatalogs.map(t => t.workDivisionId)).size}
+                                {new Set(taskCatalogs.map(t => t.divisionId)).size}
                             </div>
                             <p className="text-xs text-muted-foreground">Unique divisions</p>
                         </CardContent>
@@ -181,12 +153,40 @@ export default function TaskCatalogsPage() {
                                 Manage standard tasks within work divisions.
                             </CardDescription>
                         </div>
-                        <Button onClick={() => { setSelectedTask(null); setIsDialogOpen(true); }}>
-                            <Plus className="mr-2 h-4 w-4" /> Add Task
-                        </Button>
+
+                        <div className="flex items-center gap-2">
+                            {selectedTasks.length > 0 && (
+                                <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => setShowBulkDelete(true)}
+                                >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete ({selectedTasks.length})
+                                </Button>
+                            )}
+                            <Button onClick={() => { setSelectedTask(null); setIsDialogOpen(true); }}>
+                                <Plus className="mr-2 h-4 w-4" /> Add Task
+                            </Button>
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <DataTable columns={columns} data={taskCatalogs} isLoading={isLoading} />
+                        <TaskCatalogTable
+                            taskCatalogs={taskCatalogs}
+                            workDivisions={workDivisions || []}
+                            isLoading={isLoading}
+                            onEdit={(task) => {
+                                setSelectedTask(task);
+                                setIsDialogOpen(true);
+                            }}
+                            onDelete={(id) => {
+                                deleteTaskCatalog(id).then(() => {
+                                    toast.success("Task Catalog deleted successfully");
+                                    refreshTaskCatalogs();
+                                }).catch((err) => toast.error(err.message));
+                            }}
+                            onSelectionChange={setSelectedTasks}
+                        />
                     </CardContent>
                 </Card>
 
@@ -197,18 +197,22 @@ export default function TaskCatalogsPage() {
                     onSubmit={selectedTask ? handleUpdate : handleCreate}
                 />
 
+
+
                 <ActionDialog
-                    open={!!deleteId}
-                    onOpenChange={(open) => !open && setDeleteId(null)}
-                    title="Delete Task Catalog"
-                    description="Are you sure? This action cannot be undone."
-                    onConfirm={handleDelete}
-                    confirmLabel="Delete"
-                    isLoading={false}
+                    open={showBulkDelete}
+                    onOpenChange={setShowBulkDelete}
+                    title="Delete Selected Tasks"
+                    description={`Are you sure you want to delete ${selectedTasks.length} task catalogs? This action cannot be undone.`}
+                    onConfirm={handleBulkDelete}
+                    confirmLabel="Delete All"
+                    isLoading={isBulkDeleting}
                     type="warning"
                     variant="destructive"
+                    icon={<AlertTriangle className="h-6 w-6 text-destructive" />}
+                    iconPosition="left"
                 />
             </div>
-        </SidebarInset>
+        </SidebarInset >
     );
 }

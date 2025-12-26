@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { WorkDivision } from "@/types/work-division";
 import { useWorkDivisions } from "@/hooks/use-work-divisions";
-import { DataTable } from "@/components/ui/data-table";
+import { Plus, Pencil, Trash2, MoreHorizontal, Briefcase, BookOpen, Layers, AlertTriangle, ArrowUpDown } from "lucide-react";
+import { DataTable, createSelectColumn } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash2, MoreHorizontal, Briefcase, BookOpen, Layers } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -23,8 +23,9 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { WorkDivisionDialog } from "./components/work-division-dialog";
 import { ActionDialog } from "@/components/action-dialog";
+import { WorkDivisionTable } from "./components/work-division-table";
+import { WorkDivisionDialog } from "./components/work-division-dialog";
 import { toast } from "sonner";
 import {
     Card,
@@ -38,7 +39,10 @@ export default function WorkDivisionsPage() {
     const { workDivisions, isLoading, createWorkDivision, updateWorkDivision, deleteWorkDivision, refreshWorkDivisions } = useWorkDivisions();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedDivision, setSelectedDivision] = useState<WorkDivision | null>(null);
-    const [deleteId, setDeleteId] = useState<string | null>(null);
+    const [selectedDivisions, setSelectedDivisions] = useState<WorkDivision[]>([]);
+
+    const [showBulkDelete, setShowBulkDelete] = useState(false);
+    const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
     const handleCreate = async (data: any) => {
         try {
@@ -64,59 +68,24 @@ export default function WorkDivisionsPage() {
         }
     };
 
-    const handleDelete = async () => {
-        if (!deleteId) return;
+
+
+    const handleBulkDelete = async () => {
+        setIsBulkDeleting(true);
         try {
-            await deleteWorkDivision(deleteId);
-            toast.success("Work Division deleted successfully");
-            setDeleteId(null);
+            for (const division of selectedDivisions) {
+                await deleteWorkDivision(division.id);
+            }
+            toast.success(`${selectedDivisions.length} divisions deleted successfully`);
+            setSelectedDivisions([]);
+            setShowBulkDelete(false);
             refreshWorkDivisions();
         } catch (error: any) {
-            toast.error(error.message);
+            toast.error("Failed to delete some divisions");
+        } finally {
+            setIsBulkDeleting(false);
         }
     };
-
-    const columns: ColumnDef<WorkDivision>[] = [
-        { accessorKey: "code", header: "Code" },
-        { accessorKey: "name", header: "Name" },
-        { accessorKey: "description", header: "Description" },
-        {
-            accessorKey: "createdAt",
-            header: "Created At",
-            cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString()
-        },
-        {
-            id: "actions",
-            cell: ({ row }) => {
-                const division = row.original;
-                return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    setSelectedDivision(division);
-                                    setIsDialogOpen(true);
-                                }}
-                            >
-                                <Pencil className="mr-2 h-4 w-4" /> Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                className="text-destructive"
-                                onClick={() => setDeleteId(division.id)}
-                            >
-                                <Trash2 className="mr-2 h-4 w-4" /> Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                );
-            },
-        },
-    ];
 
     return (
         <SidebarInset>
@@ -176,15 +145,40 @@ export default function WorkDivisionsPage() {
                         <div className="space-y-1">
                             <CardTitle>Work Divisions</CardTitle>
                             <CardDescription>
-                                Manage master work divisions and categories.
                             </CardDescription>
                         </div>
-                        <Button onClick={() => { setSelectedDivision(null); setIsDialogOpen(true); }}>
-                            <Plus className="mr-2 h-4 w-4" /> Add Division
-                        </Button>
+                        <div className="flex items-center gap-2">
+                            {selectedDivisions.length > 0 && (
+                                <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => setShowBulkDelete(true)}
+                                >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete ({selectedDivisions.length})
+                                </Button>
+                            )}
+                            <Button onClick={() => { setSelectedDivision(null); setIsDialogOpen(true); }}>
+                                <Plus className="mr-2 h-4 w-4" /> Add Division
+                            </Button>
+                        </div>
                     </CardHeader>
                     <CardContent>
-                        <DataTable columns={columns} data={workDivisions} isLoading={isLoading} />
+                        <WorkDivisionTable
+                            workDivisions={workDivisions}
+                            isLoading={isLoading}
+                            onEdit={(division) => {
+                                setSelectedDivision(division);
+                                setIsDialogOpen(true);
+                            }}
+                            onDelete={(id) => {
+                                deleteWorkDivision(id).then(() => {
+                                    toast.success("Work Division deleted successfully");
+                                    refreshWorkDivisions();
+                                }).catch((err) => toast.error(err.message));
+                            }}
+                            onSelectionChange={setSelectedDivisions}
+                        />
                     </CardContent>
                 </Card>
 
@@ -195,16 +189,20 @@ export default function WorkDivisionsPage() {
                     onSubmit={selectedDivision ? handleUpdate : handleCreate}
                 />
 
+
+
                 <ActionDialog
-                    open={!!deleteId}
-                    onOpenChange={(open) => !open && setDeleteId(null)}
-                    title="Delete Work Division"
-                    description="Are you sure? This action cannot be undone."
-                    onConfirm={handleDelete}
-                    confirmLabel="Delete"
-                    isLoading={false}
+                    open={showBulkDelete}
+                    onOpenChange={setShowBulkDelete}
+                    title="Delete Selected Divisions"
+                    description={`Are you sure you want to delete ${selectedDivisions.length} divisions? This action cannot be undone.`}
+                    onConfirm={handleBulkDelete}
+                    confirmLabel="Delete All"
+                    isLoading={isBulkDeleting}
                     type="warning"
                     variant="destructive"
+                    icon={<AlertTriangle className="h-6 w-6 text-destructive" />}
+                    iconPosition="left"
                 />
             </div>
         </SidebarInset>

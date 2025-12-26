@@ -6,7 +6,7 @@ import { useOrganizations } from "@/hooks/use-organizations";
 import { DataTable, createSelectColumn } from "@/components/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash2, MoreHorizontal, AlertTriangle } from "lucide-react";
+import { Plus, Pencil, Trash2, MoreHorizontal, AlertTriangle, ArrowUpDown } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -23,8 +23,9 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { OrgDialog } from "./components/org-dialog";
 import { ActionDialog } from "@/components/action-dialog";
+import { OrganizationTable } from "./components/organization-table";
+import { OrgDialog } from "./components/org-dialog";
 import { toast } from "sonner";
 import { Building2, Clock, BarChart3 } from "lucide-react";
 import {
@@ -41,7 +42,7 @@ export default function OrganizationsPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
     const [selectedOrgs, setSelectedOrgs] = useState<Organization[]>([]);
-    const [deleteId, setDeleteId] = useState<string | null>(null);
+
     const [showBulkDelete, setShowBulkDelete] = useState(false);
     const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
@@ -69,17 +70,7 @@ export default function OrganizationsPage() {
         }
     };
 
-    const handleDelete = async () => {
-        if (!deleteId) return;
-        try {
-            await deleteOrganization(deleteId);
-            toast.success("Organization deleted successfully");
-            setDeleteId(null);
-            refreshOrganizations();
-        } catch (error: any) {
-            toast.error(error.message);
-        }
-    };
+
 
     const handleBulkDelete = async () => {
         setIsBulkDeleting(true);
@@ -98,50 +89,7 @@ export default function OrganizationsPage() {
         }
     };
 
-    const columns: ColumnDef<Organization>[] = [
-        createSelectColumn<Organization>(),
-        { accessorKey: "name", header: "Name" },
-        { accessorKey: "code", header: "Code" },
-        {
-            accessorKey: "createdAt",
-            header: "Created At",
-            cell: ({ row }) => new Date(row.original.createdAt).toLocaleDateString()
-        },
-        {
-            id: "actions",
-            cell: ({ row }) => {
-                const org = row.original;
-                return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem asChild>
-                                <Link href={`/dashboard/organization-members?orgId=${org.id}`}>Manage Members</Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() => {
-                                    setSelectedOrg(org);
-                                    setIsDialogOpen(true);
-                                }}
-                            >
-                                <Pencil className="mr-2 h-4 w-4" /> Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                className="text-destructive"
-                                onClick={() => setDeleteId(org.id)}
-                            >
-                                <Trash2 className="mr-2 h-4 w-4" /> Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                );
-            },
-        },
-    ];
+
 
     return (
         <SidebarInset>
@@ -222,32 +170,28 @@ export default function OrganizationsPage() {
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <DataTable
-                            columns={columns}
-                            data={organizations}
+                        <OrganizationTable
+                            organizations={organizations}
                             isLoading={isLoading}
-                            onRowSelectionChange={setSelectedOrgs}
+                            onEdit={(org) => {
+                                setSelectedOrg(org);
+                                setIsDialogOpen(true);
+                            }}
+                            onDelete={(id) => {
+                                deleteOrganization(id).then(() => {
+                                    toast.success("Organization deleted successfully");
+                                    refreshOrganizations();
+                                }).catch((err) => toast.error(err.message));
+                            }}
+                            onSelectionChange={setSelectedOrgs}
                         />
                     </CardContent>
                 </Card>
-
                 <OrgDialog
                     open={isDialogOpen}
                     onOpenChange={setIsDialogOpen}
                     org={selectedOrg}
                     onSubmit={selectedOrg ? handleUpdate : handleCreate}
-                />
-
-                <ActionDialog
-                    open={!!deleteId}
-                    onOpenChange={(open) => !open && setDeleteId(null)}
-                    title="Delete Organization"
-                    description="Are you sure? This will delete the organization and all related data."
-                    onConfirm={handleDelete}
-                    confirmLabel="Delete"
-                    isLoading={false}
-                    type="warning"
-                    variant="destructive"
                 />
 
                 <ActionDialog
