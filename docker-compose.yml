@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "3002:3002"
+      - "${PORT:-3002}:${PORT:-3002}"
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - PORT=${PORT:-3002}
