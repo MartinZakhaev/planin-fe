@@ -28,3 +28,9 @@ services:
 
       # ✅ ini yang paling penting: upstream port
       - "traefik.http.services.planin-fe.loadbalancer.server.port=3002"
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true
