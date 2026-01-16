@@ -104,7 +104,7 @@ export function SignupForm() {
                     <div className="space-y-1">
                         <InputGroup>
                             <InputGroupInput
-                                placeholder="your.email@example.com"
+                                placeholder="email.anda@contoh.com"
                                 type="email"
                                 {...register("email")}
                                 aria-invalid={!!errors.email}
