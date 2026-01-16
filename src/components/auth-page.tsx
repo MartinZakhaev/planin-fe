@@ -13,6 +13,7 @@ import { useState } from "react";
 import { FloatingPaths } from "@/components/floating-paths";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { toast } from "sonner";
 
 export function AuthPage() {
@@ -70,10 +71,10 @@ export function AuthPage() {
 					<div className="-translate-y-87.5 absolute top-0 right-0 h-320 w-60 rounded-full bg-[radial-gradient(50%_50%_at_50%_50%,--theme(--color-foreground/.04)_0,--theme(--color-foreground/.01)_80%,transparent_100%)]" />
 				</div>
 				<Button asChild className="absolute top-7 left-5" variant="ghost">
-					<a href="#">
+					<Link href="/">
 						<ChevronLeftIcon />
-						Home
-					</a>
+						Beranda
+					</Link>
 				</Button>
 				<div className="mx-auto space-y-4 sm:w-sm">
 					<Logo className="h-5 lg:hidden" />
