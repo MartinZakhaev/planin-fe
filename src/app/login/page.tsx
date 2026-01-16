@@ -1,10 +1,12 @@
-import { AuthPage } from "@/components/auth-page";
+import { AuthLayout, LoginForm } from "@/components/auth";
 import { GuestRoute } from "@/components/guest-route";
 
 export default function LoginPage() {
   return (
     <GuestRoute>
-      <AuthPage />
+      <AuthLayout>
+        <LoginForm />
+      </AuthLayout>
     </GuestRoute>
   );
 }
