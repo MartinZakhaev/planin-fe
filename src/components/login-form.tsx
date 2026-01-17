@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -106,9 +107,9 @@ export function LoginForm({
           </Button>
           <FieldDescription className="text-center">
             Belum punya akun?{" "}
-            <a href="/signup" className="underline underline-offset-4">
+            <Link href="/signup" className="underline underline-offset-4">
               Daftar
-            </a>
+            </Link>
           </FieldDescription>
         </Field>
       </FieldGroup>
