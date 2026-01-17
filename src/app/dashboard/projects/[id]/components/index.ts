@@ -5,3 +5,5 @@ export { DetailsTab } from "./details-tab";
 export { AddDivisionDialog } from "./add-division-dialog";
 export { AddTaskDialog } from "./add-task-dialog";
 export { AddLineItemDialog } from "./add-line-item-dialog";
+export { ExportPdfButton } from "./export-pdf-button";
+export { ProjectPdfDocument } from "./project-pdf-document";

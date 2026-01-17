@@ -20,6 +20,7 @@ import {
     Calendar,
 } from "lucide-react";
 import { ProjectDetails } from "@/types/project-details";
+import { ExportPdfButton } from "./export-pdf-button";
 
 interface OverviewTabProps {
     project: ProjectDetails;
@@ -77,7 +78,10 @@ export function OverviewTab({ project, formatCurrency }: OverviewTabProps) {
                                 <CardDescription className="mt-2">{project.description}</CardDescription>
                             )}
                         </div>
-                        <Badge variant="secondary" className="text-lg">{project.currency}</Badge>
+                        <div className="flex items-center gap-2">
+                            <ExportPdfButton project={project} formatCurrency={formatCurrency} />
+                            <Badge variant="secondary" className="text-lg">{project.currency}</Badge>
+                        </div>
                     </div>
                 </CardHeader>
                 <CardContent>
