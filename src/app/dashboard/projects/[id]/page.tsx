@@ -72,7 +72,7 @@ export default function ProjectDetailsPage() {
             <SidebarInset>
                 <header className="flex h-16 shrink-0 items-center gap-2 px-4">
                     <SidebarTrigger className="-ml-1" />
-                    <Separator orientation="vertical" className="mr-2 h-4" />
+                    <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
                     <Skeleton className="h-4 w-48" />
                 </header>
                 <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
@@ -89,7 +89,7 @@ export default function ProjectDetailsPage() {
             <SidebarInset>
                 <header className="flex h-16 shrink-0 items-center gap-2 px-4">
                     <SidebarTrigger className="-ml-1" />
-                    <Separator orientation="vertical" className="mr-2 h-4" />
+                    <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
                     <span className="text-destructive">Error loading project</span>
                 </header>
                 <div className="flex flex-1 flex-col items-center justify-center gap-4 p-4">
@@ -107,7 +107,7 @@ export default function ProjectDetailsPage() {
         <SidebarInset>
             <header className="flex h-16 shrink-0 items-center gap-2 px-4">
                 <SidebarTrigger className="-ml-1" />
-                <Separator orientation="vertical" className="mr-2 h-4" />
+                <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -126,32 +126,30 @@ export default function ProjectDetailsPage() {
             </header>
 
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                {/* Back Button */}
-                <div>
-                    <Button variant="ghost" size="sm" asChild>
-                        <Link href="/dashboard/projects">
-                            <ArrowLeft className="mr-2 h-4 w-4" />
-                            Back to Projects
-                        </Link>
-                    </Button>
-                </div>
-
-                {/* Tabs */}
+                {/* Navigation Row: Back Button + Tabs */}
                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid w-full max-w-md grid-cols-3">
-                        <TabsTrigger value="overview" className="flex items-center gap-2">
-                            <LayoutDashboard className="h-4 w-4" />
-                            <span className="hidden sm:inline">Overview</span>
-                        </TabsTrigger>
-                        <TabsTrigger value="statistics" className="flex items-center gap-2">
-                            <BarChart3 className="h-4 w-4" />
-                            <span className="hidden sm:inline">Statistics</span>
-                        </TabsTrigger>
-                        <TabsTrigger value="details" className="flex items-center gap-2">
-                            <List className="h-4 w-4" />
-                            <span className="hidden sm:inline">Details</span>
-                        </TabsTrigger>
-                    </TabsList>
+                    <div className="flex items-center justify-between flex-wrap gap-4">
+                        <Button variant="ghost" size="sm" asChild>
+                            <Link href="/dashboard/projects">
+                                <ArrowLeft className="mr-2 h-4 w-4" />
+                                Back to Projects
+                            </Link>
+                        </Button>
+                        <TabsList className="grid w-full max-w-md grid-cols-3">
+                            <TabsTrigger value="overview" className="flex items-center gap-2">
+                                <LayoutDashboard className="h-4 w-4" />
+                                <span className="hidden sm:inline">Overview</span>
+                            </TabsTrigger>
+                            <TabsTrigger value="statistics" className="flex items-center gap-2">
+                                <BarChart3 className="h-4 w-4" />
+                                <span className="hidden sm:inline">Statistics</span>
+                            </TabsTrigger>
+                            <TabsTrigger value="details" className="flex items-center gap-2">
+                                <List className="h-4 w-4" />
+                                <span className="hidden sm:inline">Details</span>
+                            </TabsTrigger>
+                        </TabsList>
+                    </div>
 
                     <TabsContent value="overview" className="mt-6">
                         <OverviewTab project={project} formatCurrency={formatCurrency} />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Project } from "@/types/project";
 import { DataTable, createSelectColumn } from "@/components/ui/data-table";
 import { Button } from "@/components/ui/button";
@@ -26,6 +27,7 @@ interface ProjectTableProps {
 }
 
 export function ProjectTable({ projects, isLoading, onEdit, onDelete, onSelectionChange }: ProjectTableProps) {
+    const router = useRouter();
     const [deleteProject, setDeleteProject] = useState<Project | null>(null);
 
     const columns: ColumnDef<Project>[] = [
@@ -46,7 +48,13 @@ export function ProjectTable({ projects, isLoading, onEdit, onDelete, onSelectio
             },
             cell: ({ row }) => (
                 <div>
-                    <div className="font-medium">{row.original.name}</div>
+                    <Link
+                        href={`/dashboard/projects/${row.original.id}`}
+                        className="font-medium hover:underline text-primary"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {row.original.name}
+                    </Link>
                     {row.original.code && (
                         <div className="text-xs text-muted-foreground">{row.original.code}</div>
                     )}
@@ -149,6 +157,7 @@ export function ProjectTable({ projects, isLoading, onEdit, onDelete, onSelectio
                 isLoading={isLoading}
                 searchPlaceholder="Search projects..."
                 onRowSelectionChange={onSelectionChange}
+                onRowClick={(project) => router.push(`/dashboard/projects/${project.id}`)}
             />
 
             <ActionDialog

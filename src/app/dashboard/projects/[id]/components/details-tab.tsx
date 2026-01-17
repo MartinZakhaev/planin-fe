@@ -518,7 +518,6 @@ export function DetailsTab({ project, formatCurrency, onRefresh }: DetailsTabPro
                         <div className="flex items-center border rounded-lg">
                             <Button
                                 variant={viewMode === "compact" ? "secondary" : "ghost"}
-                                size="sm"
                                 onClick={() => setViewMode("compact")}
                                 className="rounded-r-none"
                             >
@@ -527,7 +526,6 @@ export function DetailsTab({ project, formatCurrency, onRefresh }: DetailsTabPro
                             </Button>
                             <Button
                                 variant={viewMode === "detailed" ? "secondary" : "ghost"}
-                                size="sm"
                                 onClick={() => setViewMode("detailed")}
                                 className="rounded-l-none"
                             >

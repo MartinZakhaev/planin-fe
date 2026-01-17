@@ -103,6 +103,42 @@ export function StatisticsTab({ project, formatCurrency }: StatisticsTabProps) {
 
     return (
         <div className="space-y-6">
+            {/* Summary Stats */}
+            <div className="grid gap-4 md:grid-cols-4">
+                <Card>
+                    <CardContent className="pt-6">
+                        <p className="text-sm text-muted-foreground">Total Material Cost</p>
+                        <p className="text-xl font-bold text-blue-600">
+                            {formatCurrency(itemBreakdown[0].total, project.currency)}
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent className="pt-6">
+                        <p className="text-sm text-muted-foreground">Total Manpower Cost</p>
+                        <p className="text-xl font-bold text-green-600">
+                            {formatCurrency(itemBreakdown[1].total, project.currency)}
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent className="pt-6">
+                        <p className="text-sm text-muted-foreground">Total Tools Cost</p>
+                        <p className="text-xl font-bold text-orange-600">
+                            {formatCurrency(itemBreakdown[2].total, project.currency)}
+                        </p>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardContent className="pt-6">
+                        <p className="text-sm text-muted-foreground">Grand Total</p>
+                        <p className="text-xl font-bold text-primary">
+                            {formatCurrency(grandTotal, project.currency)}
+                        </p>
+                    </CardContent>
+                </Card>
+            </div>
+
             {/* Cost Breakdown by Type */}
             <Card>
                 <CardHeader>
@@ -208,42 +244,6 @@ export function StatisticsTab({ project, formatCurrency }: StatisticsTabProps) {
                     )}
                 </CardContent>
             </Card>
-
-            {/* Summary Stats */}
-            <div className="grid gap-4 md:grid-cols-4">
-                <Card>
-                    <CardContent className="pt-6">
-                        <p className="text-sm text-muted-foreground">Total Material Cost</p>
-                        <p className="text-xl font-bold text-blue-600">
-                            {formatCurrency(itemBreakdown[0].total, project.currency)}
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent className="pt-6">
-                        <p className="text-sm text-muted-foreground">Total Manpower Cost</p>
-                        <p className="text-xl font-bold text-green-600">
-                            {formatCurrency(itemBreakdown[1].total, project.currency)}
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent className="pt-6">
-                        <p className="text-sm text-muted-foreground">Total Tools Cost</p>
-                        <p className="text-xl font-bold text-orange-600">
-                            {formatCurrency(itemBreakdown[2].total, project.currency)}
-                        </p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardContent className="pt-6">
-                        <p className="text-sm text-muted-foreground">Grand Total</p>
-                        <p className="text-xl font-bold text-primary">
-                            {formatCurrency(grandTotal, project.currency)}
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
         </div>
     );
 }

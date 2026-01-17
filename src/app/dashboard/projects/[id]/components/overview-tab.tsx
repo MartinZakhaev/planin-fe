@@ -58,9 +58,21 @@ export function OverviewTab({ project, formatCurrency }: OverviewTabProps) {
                     <div className="flex items-start justify-between">
                         <div>
                             <CardTitle className="text-2xl">{project.name}</CardTitle>
-                            {project.code && (
-                                <Badge variant="outline" className="mt-1">{project.code}</Badge>
-                            )}
+                            <div className="flex items-center gap-2 mt-1">
+                                {project.code && (
+                                    <Badge variant="outline">{project.code}</Badge>
+                                )}
+                                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    Updated {new Date(project.updatedAt).toLocaleDateString("id-ID", {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                    })}
+                                </span>
+                            </div>
                             {project.description && (
                                 <CardDescription className="mt-2">{project.description}</CardDescription>
                             )}
@@ -157,18 +169,6 @@ export function OverviewTab({ project, formatCurrency }: OverviewTabProps) {
                     </div>
                 </CardContent>
             </Card>
-
-            {/* Last Updated */}
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Calendar className="h-4 w-4" />
-                <span>Last updated: {new Date(project.updatedAt).toLocaleDateString("id-ID", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                })}</span>
-            </div>
         </div>
     );
 }
