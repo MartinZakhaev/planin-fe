@@ -55,7 +55,7 @@ const menuGroups = [
   {
     label: "Projects",
     items: [
-      { title: "All Projects", url: "/dashboard/projects", icon: Briefcase },
+      { title: "All Projects", url: "/dashboard/projects", icon: HardHat },
     ]
   }
 ];
