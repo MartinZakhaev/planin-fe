@@ -1,84 +1,58 @@
-import { TrendingUp, Building2, Users, ArrowRight } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { TrendingUp, Building2, Users, ArrowRight, Check } from "lucide-react";
 
 const features = [
     {
         icon: TrendingUp,
-        title: "Pelacakan Biaya Real-time",
+        title: "Real-time Cost Tracking",
         description:
-            "Pantau pengeluaran saat terjadi. Foto tanda terima dan tandai ke item baris tertentu secara instan.",
-        color: "bg-[#bf5c3b]/10 text-[#bf5c3b]",
-        preview: (
-            <div className="h-32 bg-[#f8f6f6] dark:bg-[#1e1614] rounded-lg border border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-x-4 top-4 bottom-0 bg-white dark:bg-[#2a2220] rounded-t-lg shadow-sm p-3 opacity-80">
-                    <div className="flex justify-between text-xs font-bold mb-2 text-gray-400">
-                        <span>PENGELUARAN</span>
-                        <span>LIVE</span>
-                    </div>
-                    <div className="h-2 w-3/4 bg-gray-100 dark:bg-gray-700 rounded mb-2" />
-                    <div className="h-2 w-1/2 bg-gray-100 dark:bg-gray-700 rounded" />
-                </div>
-            </div>
-        ),
+            "Monitor expenses as they happen. Snap receipt photos and tag them to specific line items instantly.",
+        highlights: ["Instant sync across devices", "Receipt OCR scanning", "Multi-currency support"],
+        badge: "Popular",
     },
     {
         icon: Building2,
-        title: "Estimasi Biaya Material",
+        title: "Material Cost Estimation",
         description:
-            "Dapatkan estimasi akurat untuk bahan baku berdasarkan harga pasar saat ini dan data historis proyek.",
-        color: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
-        preview: (
-            <div className="h-32 bg-[#f8f6f6] dark:bg-[#1e1614] rounded-lg border border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center relative overflow-hidden">
-                <div className="flex gap-2 items-end">
-                    <div className="w-8 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-sm" />
-                    <div className="w-8 h-20 bg-blue-200 dark:bg-blue-800/30 rounded-sm" />
-                    <div className="w-8 h-12 bg-blue-300 dark:bg-blue-700/30 rounded-sm" />
-                </div>
-            </div>
-        ),
+            "Get accurate material estimates based on current market prices and historical project data.",
+        highlights: ["Market-price database", "Historical benchmarking", "Auto-updated quotes"],
+        badge: null,
     },
     {
         icon: Users,
-        title: "Manajemen Tenaga Kerja",
+        title: "Workforce Management",
         description:
-            "Lacak jam kerja, lembur, dan biaya tenaga kerja secara efisien. Tetapkan kru untuk tugas dan pantau produktivitas.",
-        color:
-            "bg-orange-50 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400",
-        preview: (
-            <div className="h-32 bg-[#f8f6f6] dark:bg-[#1e1614] rounded-lg border border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center relative overflow-hidden">
-                <div className="flex -space-x-2">
-                    <div className="w-8 h-8 rounded-full bg-orange-100 border-2 border-white dark:border-[#1e1614]" />
-                    <div className="w-8 h-8 rounded-full bg-orange-200 border-2 border-white dark:border-[#1e1614]" />
-                    <div className="w-8 h-8 rounded-full bg-orange-300 border-2 border-white dark:border-[#1e1614]" />
-                </div>
-            </div>
-        ),
+            "Track work hours, overtime, and labor costs efficiently. Assign crews to tasks and monitor productivity.",
+        highlights: ["GPS attendance tracking", "Overtime calculation", "Productivity analytics"],
+        badge: null,
     },
 ];
 
 export function Features() {
     return (
-        <section
-            id="features"
-            className="py-20 px-4 md:px-10 bg-[#f8f6f6] dark:bg-[#1e1614]"
-        >
-            <div className="max-w-[1280px] mx-auto">
+        <section id="features" className="py-20 md:py-28 bg-muted/40">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-16">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
                     <div className="max-w-xl">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-[#171312] dark:text-white">
-                            Alat untuk Lokasi Kerja
+                        <Badge variant="secondary" className="mb-3 text-xs">
+                            Core Features
+                        </Badge>
+                        <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
+                            Built for the Jobsite
                         </h2>
-                        <p className="text-lg text-gray-600 dark:text-gray-400">
-                            Segala yang Anda butuhkan untuk menjaga proyek konstruksi tetap
-                            sesuai anggaran, tepat waktu, dan memenuhi standar.
+                        <p className="text-muted-foreground text-lg">
+                            Everything you need to keep construction projects on budget, on
+                            time, and up to standard.
                         </p>
                     </div>
                     <a
                         href="#"
-                        className="text-[#bf5c3b] font-bold flex items-center gap-1 hover:gap-2 transition-all"
+                        className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:gap-2.5 transition-all"
                     >
-                        Lihat semua fitur{" "}
-                        <ArrowRight className="w-4 h-4" />
+                        View all features
+                        <ArrowRight className="size-4" />
                     </a>
                 </div>
 
@@ -87,23 +61,45 @@ export function Features() {
                     {features.map((feature) => {
                         const Icon = feature.icon;
                         return (
-                            <div
+                            <Card
                                 key={feature.title}
-                                className="group p-8 rounded-2xl bg-white dark:bg-[#2a2220] border border-[#e4dfdd] dark:border-[#3a2e2b] shadow-sm hover:shadow-xl hover:shadow-[#bf5c3b]/5 hover:border-[#bf5c3b]/30 transition-all duration-300"
+                                className="group relative overflow-hidden border shadow-sm"
                             >
-                                <div
-                                    className={`w-12 h-12 rounded-lg ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}
-                                >
-                                    <Icon className="w-7 h-7" />
-                                </div>
-                                <h3 className="text-xl font-bold mb-3 text-[#171312] dark:text-white">
-                                    {feature.title}
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
-                                    {feature.description}
-                                </p>
-                                {feature.preview}
-                            </div>
+                                <CardContent className="p-6 space-y-5">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                                            <Icon className="size-6" />
+                                        </div>
+                                        {feature.badge && (
+                                            <Badge variant="secondary" className="text-xs">
+                                                {feature.badge}
+                                            </Badge>
+                                        )}
+                                    </div>
+
+                                    <div>
+                                        <h3 className="text-lg font-semibold mb-2">
+                                            {feature.title}
+                                        </h3>
+                                        <p className="text-sm text-muted-foreground leading-relaxed">
+                                            {feature.description}
+                                        </p>
+                                    </div>
+
+                                    {/* Feature Highlights */}
+                                    <div className="space-y-2 pt-2">
+                                        {feature.highlights.map((highlight) => (
+                                            <div
+                                                key={highlight}
+                                                className="flex items-center gap-2.5 text-sm text-muted-foreground"
+                                            >
+                                                <Check className="size-4 text-primary shrink-0" />
+                                                {highlight}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
                         );
                     })}
                 </div>

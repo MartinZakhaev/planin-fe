@@ -3,7 +3,12 @@ export interface User {
     email: string;
     fullName: string;
     profileFileId?: string;
-    role: string;
+    roleId?: string | null;
+    role?: {
+        id: string;
+        name: string;
+        displayName: string;
+    } | null;
     emailVerified: boolean;
     createdAt: string;
 }
@@ -13,11 +18,14 @@ export interface CreateUserDto {
     fullName: string;
     password?: string;
     profileFileId?: string;
-    role: string;
+    roleId?: string;
+    role?: string; // legacy support
 }
 
 export interface UpdateUserDto {
     fullName?: string;
     profileFileId?: string;
-    role?: string;
+    roleId?: string;
+    role?: string; // legacy support
 }
+

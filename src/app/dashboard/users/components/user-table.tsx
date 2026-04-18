@@ -72,6 +72,16 @@ export function UserTable({ users, isLoading, onEdit, onDelete, onSelectionChang
                     </Button>
                 );
             },
+            cell: ({ row }) => {
+                const role = row.original.role;
+                return role ? (
+                    <span className="inline-flex items-center rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+                        {role.displayName}
+                    </span>
+                ) : (
+                    <span className="text-muted-foreground text-xs">No role</span>
+                );
+            },
         },
         {
             accessorKey: "createdAt",

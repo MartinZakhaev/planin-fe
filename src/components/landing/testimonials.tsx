@@ -1,68 +1,112 @@
-import { Quote } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Quote, Star, Check } from "lucide-react";
 
 const testimonials = [
     {
         quote:
-            "Akhirnya, alat yang memahami kompleksitas keuangan konstruksi. Kami menghemat 15% pada limbah material di kuartal pertama saja.",
+            "Finally, a tool that understands construction finance complexity. We saved 15% on material waste in the first quarter alone.",
         name: "Marcus Chen",
         role: "Senior PM, BuildRight Inc.",
-        image: "MC",
+        initials: "MC",
+        stars: 5,
+        bgColor: "bg-blue-600 text-white",
     },
     {
         quote:
-            "Integrasi antara pelacakan tenaga kerja dan estimasi penggajian sangat lancar. Ini telah memangkas pekerjaan administratif kami hingga separuhnya.",
+            "The integration between labor tracking and payroll estimation is seamless. It's cut our administrative work in half.",
         name: "Sarah Jenkins",
-        role: "Direktur Operasional, Apex Construction",
-        image: "SJ",
+        role: "Operations Director, Apex Construction",
+        initials: "SJ",
+        stars: 5,
+        bgColor: "bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900",
     },
     {
         quote:
-            "Saya dulu takut rekonsiliasi akhir bulan. Dengan Planin, semuanya dicatat secara real-time. Ini adalah perubahan besar.",
+            "I used to dread end-of-month reconciliation. With Planin, everything is logged in real-time. It's a game changer.",
         name: "David Miller",
-        role: "Kontraktor Umum",
-        image: "DM",
+        role: "General Contractor",
+        initials: "DM",
+        stars: 5,
+        bgColor: "bg-slate-300 text-slate-800",
     },
+];
+
+const stats = [
+    { value: "1,200+", label: "Active Users" },
+    { value: "50M+", label: "Budget Tracked" },
+    { value: "99.9%", label: "Uptime SLA" },
+    { value: "4.9/5", label: "Average Rating" },
 ];
 
 export function Testimonials() {
     return (
-        <section
-            id="testimonials"
-            className="py-20 px-4 md:px-10 bg-[#f8f6f6] dark:bg-[#1e1614]"
-        >
-            <div className="max-w-[1280px] mx-auto">
+        <section id="testimonials" className="py-20 md:py-28">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className="text-center max-w-2xl mx-auto mb-16">
-                    <h2 className="text-3xl font-bold mb-4 text-[#171312] dark:text-white">
-                        Dibuat untuk Manajer Proyek
+                <div className="text-center max-w-2xl mx-auto mb-12">
+                    <Badge variant="secondary" className="mb-3 text-xs">
+                        Testimonials
+                    </Badge>
+                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
+                        Trusted by Project Managers
                     </h2>
-                    <p className="text-gray-600 dark:text-gray-400">
-                        Jangan hanya percaya kata-kata kami. Inilah pendapat industri.
+                    <p className="text-muted-foreground">
+                        Don&apos;t just take our word for it. Here&apos;s what industry
+                        professionals say.
                     </p>
                 </div>
 
                 {/* Testimonial Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
                     {testimonials.map((testimonial) => (
-                        <div
+                        <Card
                             key={testimonial.name}
-                            className="bg-white dark:bg-[#2a2220] p-8 rounded-xl border border-[#e4dfdd] dark:border-[#3a2e2b] relative"
+                            className="relative overflow-hidden border shadow-sm"
                         >
-                            <Quote className="w-12 h-12 text-[#bf5c3b]/20 absolute top-6 right-6" />
-                            <p className="text-[#171312] dark:text-gray-200 mb-8 relative z-10 text-lg leading-relaxed">
-                                &quot;{testimonial.quote}&quot;
-                            </p>
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded bg-gradient-to-br from-[#bf5c3b] to-[#8b3a24] flex items-center justify-center text-white font-bold text-sm">
-                                    {testimonial.image}
+                            <CardContent className="p-6 space-y-5">
+                                {/* Quote Icon */}
+                                <Quote className="size-10 text-primary/10 absolute top-6 right-6" />
+
+                                {/* Stars */}
+                                <div className="flex gap-1">
+                                    {[...Array(testimonial.stars)].map((_, i) => (
+                                        <Star
+                                            key={i}
+                                            className="size-4 text-amber-400 fill-amber-400"
+                                        />
+                                    ))}
                                 </div>
-                                <div>
-                                    <h4 className="font-bold text-sm text-[#171312] dark:text-white">
-                                        {testimonial.name}
-                                    </h4>
-                                    <p className="text-xs text-gray-500">{testimonial.role}</p>
+
+                                <p className="text-sm leading-relaxed text-foreground/80">
+                                    &quot;{testimonial.quote}&quot;
+                                </p>
+
+                                {/* Author */}
+                                <div className="flex items-center gap-3 pt-4 border-t">
+                                    <div
+                                        className={`flex h-10 w-10 items-center justify-center rounded-lg text-xs font-bold shadow-sm ${testimonial.bgColor}`}
+                                    >
+                                        {testimonial.initials}
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium">{testimonial.name}</p>
+                                        <p className="text-xs text-muted-foreground">
+                                            {testimonial.role}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+
+                {/* Trust Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8 p-8 bg-muted/50 rounded-2xl">
+                    {stats.map((stat) => (
+                        <div key={stat.label} className="text-center">
+                            <p className="text-3xl font-bold text-primary mb-1">{stat.value}</p>
+                            <p className="text-sm text-muted-foreground">{stat.label}</p>
                         </div>
                     ))}
                 </div>

@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { User, CreateUserDto, UpdateUserDto } from "@/types/user";
+import { useRoles } from "@/hooks/use-roles";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -31,20 +32,29 @@ interface UserDialogProps {
 }
 
 export function UserDialog({ open, onOpenChange, user, onSubmit }: UserDialogProps) {
-    const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<CreateUserDto & UpdateUserDto>();
+    const { roles, isLoading: rolesLoading } = useRoles();
+    const { register, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting } } = useForm<CreateUserDto & UpdateUserDto>();
+
+    const selectedRoleId = watch("roleId");
 
     useEffect(() => {
         if (open) {
             if (user) {
                 setValue("fullName", user.fullName);
-                setValue("role", user.role);
-                // Email usually not editable or handled separately, but let's assume read-only for edit
+                setValue("roleId", user.roleId || "");
                 setValue("email", user.email);
             } else {
-                reset({ fullName: "", email: "", role: "user", password: "" });
+                // Default to 'user' role for new users
+                const defaultRole = roles.find(r => r.name === 'user');
+                reset({
+                    fullName: "",
+                    email: "",
+                    roleId: defaultRole?.id || "",
+                    password: ""
+                });
             }
         }
-    }, [open, user, reset, setValue]);
+    }, [open, user, reset, setValue, roles]);
 
     const onFormSubmit = async (data: any) => {
         await onSubmit(data);
@@ -84,15 +94,28 @@ export function UserDialog({ open, onOpenChange, user, onSubmit }: UserDialogPro
                     )}
                     <div className="grid gap-2">
                         <Label htmlFor="role">Role</Label>
-                        <Select onValueChange={(val) => setValue("role", val)} defaultValue={user?.role || "user"}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Select a role" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="user">User</SelectItem>
-                                <SelectItem value="admin">Admin</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        {rolesLoading ? (
+                            <div className="flex items-center gap-2 text-muted-foreground">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                Loading roles...
+                            </div>
+                        ) : (
+                            <Select
+                                onValueChange={(val) => setValue("roleId", val)}
+                                value={selectedRoleId}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select a role" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {roles.map(role => (
+                                        <SelectItem key={role.id} value={role.id}>
+                                            {role.displayName}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        )}
                     </div>
                     <DialogFooter>
                         <Button type="submit" disabled={isSubmitting}>
@@ -105,3 +128,4 @@ export function UserDialog({ open, onOpenChange, user, onSubmit }: UserDialogPro
         </Dialog>
     );
 }
+

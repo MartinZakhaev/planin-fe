@@ -1,148 +1,116 @@
-import { ArrowLeftRight, CheckCircle } from "lucide-react";
-
-const benefits = [
-    {
-        title: "Laporan Varians Otomatis",
-        description:
-            "Dapatkan notifikasi segera ketika item baris melebihi estimasi.",
-    },
-    {
-        title: "Benchmarking Data Historis",
-        description:
-            "Gunakan data dari pekerjaan masa lalu untuk menawar lebih cerdas di masa depan.",
-    },
-    {
-        title: "Dasbor Multi-Proyek",
-        description:
-            "Lihat kesehatan keuangan seluruh portofolio Anda dalam sekilas pandang.",
-    },
-];
-
-const budgetItems = [
-    { name: "Beton & Pondasi", percentage: 102, status: "over", color: "red" },
-    { name: "Rangka & Dinding", percentage: 45, status: "ok", color: "green" },
-    { name: "Listrik & Pipa", percentage: 12, status: "ok", color: "primary" },
-];
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle2, TrendingDown, TrendingUp, BarChart3, AlertCircle } from "lucide-react";
 
 export function Comparison() {
     return (
-        <section className="py-20 bg-[#171312] text-white relative overflow-hidden">
-            {/* Background Pattern */}
-            <div
-                className="absolute inset-0 opacity-10"
-                style={{
-                    backgroundImage: "radial-gradient(#bf5c3b 1px, transparent 1px)",
-                    backgroundSize: "32px 32px",
-                }}
-            />
-
-            <div className="max-w-[1280px] mx-auto px-4 md:px-0 relative z-10">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                    {/* Dashboard Preview */}
-                    <div className="order-2 lg:order-1">
-                        <div className="bg-[#2a2220] border border-gray-700 rounded-xl p-1 shadow-2xl">
-                            {/* Tab Header */}
-                            <div className="flex bg-[#1e1614] rounded-lg p-1 mb-1">
-                                <div className="flex-1 py-2 text-center text-sm font-bold text-gray-500">
-                                    Spreadsheet Tradisional
+        <section className="py-24 bg-white dark:bg-background border-t border-slate-200 dark:border-slate-800">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div className="grid lg:grid-cols-2 gap-16 items-center">
+                    {/* Data Visualization / Insight Card */}
+                    <div className="order-2 lg:order-1 relative">
+                        {/* A very clean, austere data card like a real enterprise tool */}
+                        <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 shadow-sm overflow-hidden">
+                            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                                <div className="flex items-center gap-2">
+                                    <BarChart3 className="size-4 text-slate-500" />
+                                    <h3 className="text-sm font-medium text-slate-900 dark:text-slate-100">Live Variance Detection</h3>
                                 </div>
-                                <div className="flex-1 py-2 text-center text-sm font-bold bg-[#2a2220] rounded shadow text-white border border-gray-700">
-                                    Dasbor Planin
-                                </div>
+                                <Badge variant="outline" className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 bg-white dark:bg-slate-950 rounded-sm">
+                                    Auto-Synced
+                                </Badge>
                             </div>
-
-                            {/* Dashboard Content */}
-                            <div className="bg-[#2a2220] p-6 rounded-lg min-h-[300px] flex flex-col gap-4">
-                                <div className="flex items-center justify-between">
-                                    <h4 className="font-bold text-lg">Ringkasan Proyek Q3</h4>
-                                    <button className="text-xs bg-[#bf5c3b]/20 text-[#bf5c3b] px-2 py-1 rounded hover:bg-[#bf5c3b]/30 transition">
-                                        Ekspor PDF
-                                    </button>
-                                </div>
-
-                                {/* Stats Grid */}
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div className="bg-[#1e1614] p-4 rounded border border-gray-800">
-                                        <p className="text-xs text-gray-500 mb-1">Total Anggaran</p>
-                                        <p className="text-lg font-bold text-white">450jt</p>
-                                    </div>
-                                    <div className="bg-[#1e1614] p-4 rounded border border-gray-800">
-                                        <p className="text-xs text-gray-500 mb-1">Terpakai</p>
-                                        <p className="text-lg font-bold text-[#bf5c3b]">320jt</p>
-                                    </div>
-                                    <div className="bg-[#1e1614] p-4 rounded border border-gray-800">
-                                        <p className="text-xs text-gray-500 mb-1">Sisa</p>
-                                        <p className="text-lg font-bold text-green-500">130jt</p>
-                                    </div>
-                                </div>
-
-                                {/* Progress Bars */}
-                                <div className="mt-2 space-y-3">
-                                    {budgetItems.map((item) => (
-                                        <div key={item.name}>
-                                            <div className="flex justify-between text-xs mb-1">
-                                                <span className="text-gray-400">{item.name}</span>
-                                                <span
-                                                    className={`font-bold ${item.color === "red"
-                                                        ? "text-red-400"
-                                                        : item.color === "green"
-                                                            ? "text-green-400"
-                                                            : "text-[#bf5c3b]"
-                                                        }`}
-                                                >
-                                                    {item.percentage}%
-                                                    {item.status === "over" && " (Berlebih)"}
-                                                </span>
-                                            </div>
-                                            <div className="w-full bg-gray-800 rounded-full h-1.5">
-                                                <div
-                                                    className={`h-1.5 rounded-full ${item.color === "red"
-                                                        ? "bg-red-500"
-                                                        : item.color === "green"
-                                                            ? "bg-green-500"
-                                                            : "bg-[#bf5c3b]"
-                                                        }`}
-                                                    style={{
-                                                        width: `${Math.min(item.percentage, 100)}%`,
-                                                    }}
-                                                />
-                                            </div>
+                            
+                            <div className="p-6 space-y-7">
+                                {/* Topline Metrics */}
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Forecasted Cost</p>
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-3xl font-semibold text-slate-900 dark:text-slate-100 font-mono tracking-tight">$2.4M</span>
                                         </div>
-                                    ))}
+                                    </div>
+                                    <div>
+                                        <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Variance vs Budget</p>
+                                        <div className="flex items-baseline gap-2">
+                                            <span className="text-3xl font-semibold text-rose-600 dark:text-rose-500 font-mono tracking-tight">+$182K</span>
+                                            <span className="flex items-center text-xs font-semibold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 px-1.5 py-0.5 rounded-sm">
+                                                <TrendingUp className="size-3 mr-1" />
+                                                8.2%
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="h-px bg-slate-100 dark:bg-slate-800" />
+
+                                {/* Line Items */}
+                                <div className="space-y-4 pt-1">
+                                    <div className="flex justify-between items-center text-sm">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600" />
+                                            <span className="text-slate-600 dark:text-slate-400 font-medium">Foundation Materials</span>
+                                        </div>
+                                        <span className="font-mono text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">On Budget</span>
+                                    </div>
+                                    
+                                    <div className="flex justify-between items-center text-sm">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                                            <span className="text-slate-900 dark:text-slate-100 font-semibold">Structural Steel</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <AlertCircle className="size-3.5 text-rose-500" />
+                                            <span className="font-mono text-rose-600 dark:text-rose-500 font-semibold">+$145K</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-between items-center text-sm">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                            <span className="text-slate-600 dark:text-slate-400 font-medium">Site Prep</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <TrendingDown className="size-3.5 text-emerald-500" />
+                                            <span className="font-mono text-emerald-600 dark:text-emerald-500 font-semibold">-$37K</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
+                        {/* Subtle decorative background element, extremely professional and minimal */}
+                        <div className="absolute -inset-3 sm:-inset-4 bg-slate-50/80 dark:bg-slate-900/30 rounded-[18px] -z-10 border border-slate-100 dark:border-slate-800/30" />
                     </div>
 
-                    {/* Content */}
-                    <div className="order-1 lg:order-2">
-                        <div className="inline-block p-3 rounded-lg bg-[#bf5c3b]/20 mb-6">
-                            <ArrowLeftRight className="w-7 h-7 text-[#bf5c3b]" />
-                        </div>
-                        <h2 className="text-3xl md:text-4xl font-bold mb-6">
-                            Berhenti menduga. Mulai mengetahui.
+                    {/* Explanatory Content */}
+                    <div className="order-1 lg:order-2 lg:pl-8">
+                        <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 mb-5 leading-tight">
+                            Spot cost overruns instantly.
                         </h2>
-                        <p className="text-lg text-gray-400 mb-8 leading-relaxed">
-                            Spreadsheet statis menyembunyikan kebenaran sampai terlambat.
-                            Planin mengubah data mentah Anda menjadi wawasan yang dapat
-                            ditindaklanjuti, menyoroti risiko sebelum menjadi pembengkakan
-                            biaya.
+                        <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-lg mb-10">
+                            Planin automatically correlates your field data with your original estimates. Stop waiting for end-of-month accounting to realize you're bleeding budget.
                         </p>
 
-                        {/* Benefits List */}
-                        <ul className="space-y-4">
-                            {benefits.map((benefit) => (
-                                <li key={benefit.title} className="flex items-start gap-3">
-                                    <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
-                                    <div>
-                                        <strong className="block text-white">{benefit.title}</strong>
-                                        <span className="text-sm text-gray-400">
-                                            {benefit.description}
-                                        </span>
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
+                        <div className="space-y-6 md:space-y-8">
+                            <div className="flex gap-4">
+                                <div className="mt-0.5">
+                                    <CheckCircle2 className="size-5 text-primary" />
+                                </div>
+                                <div>
+                                    <h4 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-1.5">Real-time Variance Tracking</h4>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed text-balance">Watch your actuals vs. budget update the moment an invoice is approved or a timesheet is logged.</p>
+                                </div>
+                            </div>
+                            <div className="flex gap-4">
+                                <div className="mt-0.5">
+                                    <CheckCircle2 className="size-5 text-primary" />
+                                </div>
+                                <div>
+                                    <h4 className="text-base font-semibold text-slate-900 dark:text-slate-100 mb-1.5">Drill-down Analytics</h4>
+                                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed text-balance">Click into any overage to instantly see the specific line items, vendor bills, or labor categories driving the cost.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,136 +1,156 @@
-import { Check, X } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Check, X } from "lucide-react";
 import Link from "next/link";
 
 const plans = [
     {
         name: "Basic",
-        description: "Gratis untuk kontraktor individu.",
+        description: "Free for individual contractors.",
         price: "Rp 0",
-        period: "/bulan",
+        period: "/month",
         features: [
-            { name: "1 Proyek Aktif", included: true },
-            { name: "Pelacakan Biaya Dasar", included: true },
-            { name: "Akses Aplikasi Seluler", included: true },
-            { name: "Estimasi Material", included: false },
+            { name: "1 Active Project", included: true },
+            { name: "Basic Cost Tracking", included: true },
+            { name: "Mobile App Access", included: true },
+            { name: "Material Estimation", included: false },
+            { name: "Priority Support", included: false },
         ],
-        cta: "Mulai Gratis",
+        cta: "Start Free",
         featured: false,
     },
     {
         name: "Pro",
-        description: "Ideal untuk tim konstruksi kecil.",
+        description: "Ideal for small construction teams.",
         price: "Rp 750k",
-        period: "/bulan",
+        period: "/month",
         features: [
-            { name: "Proyek Aktif Tak Terbatas", included: true },
-            { name: "Analisis & Laporan Lanjutan", included: true },
-            { name: "Estimasi Material & Tenaga Kerja", included: true },
-            { name: "Pemindaian Tanda Terima (OCR)", included: true },
-            { name: "Dukungan Email Prioritas", included: true },
+            { name: "Unlimited Active Projects", included: true },
+            { name: "Advanced Analytics & Reports", included: true },
+            { name: "Material & Labor Estimation", included: true },
+            { name: "Receipt Scanning (OCR)", included: true },
+            { name: "Priority Email Support", included: true },
         ],
-        cta: "Mulai Uji Coba Gratis",
+        cta: "Start 14-Day Free Trial",
         featured: true,
     },
     {
         name: "Enterprise",
-        description: "Solusi khusus untuk perusahaan besar.",
-        price: "Khusus",
+        description: "Custom solution for large organizations.",
+        price: "Custom",
         period: "",
         features: [
-            { name: "Semua fitur di Pro", included: true },
-            { name: "Manajer Akun Berdedikasi", included: true },
-            { name: "Integrasi API Khusus", included: true },
-            { name: "Pelatihan & Pengaturan di Lokasi", included: true },
-            { name: "SLA & Keamanan Perusahaan", included: true },
+            { name: "All Pro Features", included: true },
+            { name: "Dedicated Account Manager", included: true },
+            { name: "Custom API Integrations", included: true },
+            { name: "On-site Training & Setup", included: true },
+            { name: "Enterprise SLA & Security", included: true },
         ],
-        cta: "Hubungi Kami untuk Harga Khusus",
+        cta: "Contact Us",
         featured: false,
     },
 ];
 
 export function Pricing() {
     return (
-        <section
-            id="pricing"
-            className="py-20 bg-gray-50 dark:bg-[#241c1a] border-t border-b border-[#e4dfdd] dark:border-[#3a2e2b]"
-        >
-            <div className="max-w-[1280px] mx-auto px-4 md:px-0">
+        <section id="pricing" className="py-20 md:py-28 bg-muted/40">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className="text-center max-w-2xl mx-auto mb-16">
-                    <h2 className="text-3xl font-bold mb-4 text-[#171312] dark:text-white">
-                        Harga Simpel dan Transparan
+                <div className="text-center max-w-2xl mx-auto mb-12">
+                    <Badge variant="secondary" className="mb-3 text-xs">
+                        Pricing
+                    </Badge>
+                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-3">
+                        Simple, Transparent Pricing
                     </h2>
-                    <p className="text-gray-600 dark:text-gray-400">
-                        Pilih paket yang sesuai dengan skala proyek konstruksi Anda.
+                    <p className="text-muted-foreground">
+                        Choose a plan that fits the scale of your construction projects.
                     </p>
                 </div>
 
                 {/* Pricing Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
                     {plans.map((plan) => (
-                        <div
+                        <Card
                             key={plan.name}
-                            className={`bg-white dark:bg-[#2a2220] rounded-2xl p-8 flex flex-col h-full ${plan.featured
-                                ? "border-2 border-[#bf5c3b] relative shadow-xl transform scale-105 z-10"
-                                : "border border-[#e4dfdd] dark:border-[#3a2e2b] shadow-sm hover:shadow-xl transition-shadow"
-                                }`}
+                            className={`relative flex flex-col ${
+                                plan.featured
+                                    ? "border-primary shadow-lg shadow-primary/10"
+                                    : ""
+                            }`}
                         >
                             {plan.featured && (
-                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#bf5c3b] text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                                    Terpopuler
+                                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                                    <Badge className="text-xs font-semibold">Most Popular</Badge>
                                 </div>
                             )}
 
-                            <div className="mb-6">
-                                <h3 className="text-xl font-bold text-[#171312] dark:text-white mb-2">
-                                    {plan.name}
-                                </h3>
-                                <p className="text-sm text-gray-500 mb-4">{plan.description}</p>
-                                <div className="flex items-end gap-1">
-                                    <span className="text-4xl font-black text-[#171312] dark:text-white">
-                                        {plan.price}
-                                    </span>
-                                    <span className="text-gray-500 mb-1">{plan.period}</span>
+                            <CardHeader>
+                                <CardTitle className="text-xl">{plan.name}</CardTitle>
+                                <CardDescription className="text-sm mt-1">
+                                    {plan.description}
+                                </CardDescription>
+                                <div className="flex items-end gap-1.5 pt-4">
+                                    <span className="text-4xl font-bold">{plan.price}</span>
+                                    {plan.period && (
+                                        <span className="text-muted-foreground mb-1.5">
+                                            {plan.period}
+                                        </span>
+                                    )}
                                 </div>
-                            </div>
+                            </CardHeader>
 
-                            <ul className="space-y-4 mb-8 flex-1">
-                                {plan.features.map((feature) => (
-                                    <li
-                                        key={feature.name}
-                                        className={`flex items-start gap-3 text-sm ${feature.included
-                                            ? "text-gray-600 dark:text-gray-300"
-                                            : "text-gray-400"
+                            <CardContent className="flex-1">
+                                <ul className="space-y-3">
+                                    {plan.features.map((feature) => (
+                                        <li
+                                            key={feature.name}
+                                            className={`flex items-center gap-3 text-sm ${
+                                                feature.included
+                                                    ? "text-foreground"
+                                                    : "text-muted-foreground"
                                             }`}
-                                    >
-                                        {feature.included ? (
-                                            <Check
-                                                className={`w-4 h-4 shrink-0 mt-0.5 ${plan.featured ? "text-[#bf5c3b]" : "text-green-500"
+                                        >
+                                            {feature.included ? (
+                                                <Check
+                                                    className={`size-4 shrink-0 ${
+                                                        plan.featured
+                                                            ? "text-primary"
+                                                            : "text-green-500"
                                                     }`}
-                                            />
-                                        ) : (
-                                            <X className="w-4 h-4 shrink-0 mt-0.5 text-gray-300 dark:text-gray-600" />
-                                        )}
-                                        <span>{feature.name}</span>
-                                    </li>
-                                ))}
-                            </ul>
+                                                />
+                                            ) : (
+                                                <X className="size-4 shrink-0 text-muted-foreground/50" />
+                                            )}
+                                            <span>{feature.name}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </CardContent>
 
-                            <Link href="/signup">
-                                <Button
-                                    className={`w-full py-3 font-bold ${plan.featured
-                                        ? "bg-[#bf5c3b] text-white hover:bg-[#bf5c3b]/90 shadow-lg shadow-[#bf5c3b]/20"
-                                        : "border-2 border-[#171312] dark:border-gray-600 bg-transparent text-[#171312] dark:text-white hover:bg-gray-50 dark:hover:bg-[#3a2e2b]"
-                                        }`}
-                                    variant={plan.featured ? "default" : "outline"}
-                                >
-                                    {plan.cta}
-                                </Button>
-                            </Link>
-                        </div>
+                            <CardFooter className="pt-4">
+                                <Link href="/signup" className="w-full">
+                                    <Button
+                                        className="w-full"
+                                        variant={plan.featured ? "default" : "outline"}
+                                    >
+                                        {plan.cta}
+                                    </Button>
+                                </Link>
+                            </CardFooter>
+                        </Card>
                     ))}
                 </div>
+
+                {/* Money Back Guarantee */}
+                <p className="text-center text-sm text-muted-foreground mt-10">
+                    All plans include a{" "}
+                    <span className="font-medium text-foreground">
+                        30-day money-back guarantee
+                    </span>
+                    . No questions asked.
+                </p>
             </div>
         </section>
     );

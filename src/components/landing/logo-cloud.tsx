@@ -10,20 +10,20 @@ const logos = [
 
 export function LogoCloud() {
     return (
-        <section className="border-y border-[#e4dfdd] dark:border-[#3a2e2b] bg-white dark:bg-[#1e1614] py-10">
-            <div className="max-w-[1280px] mx-auto px-4 md:px-10">
-                <p className="text-center text-sm font-bold text-gray-500 mb-8 uppercase tracking-widest">
-                    Dipercaya oleh pemimpin industri
+        <section className="border-y bg-card">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+                <p className="text-center text-xs font-medium text-muted-foreground uppercase tracking-widest mb-10">
+                    Trusted by Industry Leaders
                 </p>
-                <div className="flex flex-wrap justify-center items-center gap-x-12 gap-y-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+                <div className="flex flex-wrap justify-center items-center gap-x-14 gap-y-8">
                     {logos.map((logo) => {
                         const Icon = logo.icon;
                         return (
                             <div
                                 key={logo.name}
-                                className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2"
+                                className="flex items-center gap-2.5 text-sm font-semibold text-muted-foreground/70 hover:text-foreground transition-colors"
                             >
-                                <Icon className="w-6 h-6" />
+                                <Icon className="size-5" />
                                 {logo.name}
                             </div>
                         );

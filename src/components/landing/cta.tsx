@@ -1,39 +1,70 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowRight, CheckCircle2, Shield, Clock } from "lucide-react";
+
+const trustPoints = [
+    { icon: CheckCircle2, text: "No credit card required" },
+    { icon: Shield, text: "Bank-grade security" },
+    { icon: Clock, text: "Cancel anytime" },
+];
 
 export function CTA() {
     return (
-        <section className="py-24 bg-[#f8f6f6] dark:bg-[#1e1614] px-4 md:px-10">
-            <div className="max-w-4xl mx-auto bg-[#bf5c3b] rounded-3xl p-8 md:p-16 text-center text-white relative overflow-hidden shadow-2xl">
-                {/* Decorative Circles */}
-                <div className="absolute -top-24 -left-24 w-64 h-64 bg-white opacity-10 rounded-full pointer-events-none" />
-                <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full pointer-events-none" />
+        <section className="py-24 md:py-32">
+            <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+                <Card className="bg-primary text-primary-foreground overflow-hidden shadow-2xl border-0">
+                    <CardContent className="p-10 md:p-16 text-center relative">
+                        {/* Decorative background */}
+                        <div className="absolute inset-0 opacity-10">
+                            <div className="absolute -top-24 -left-24 w-72 h-72 bg-white rounded-full" />
+                            <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-white rounded-full" />
+                        </div>
 
-                <h2 className="relative z-10 text-3xl md:text-5xl font-black mb-6 tracking-tight">
-                    Siap untuk memulai penganggaran yang lebih baik?
-                </h2>
-                <p className="relative z-10 text-lg md:text-xl text-white/90 mb-10 max-w-2xl mx-auto">
-                    Bergabunglah dengan ribuan profesional konstruksi yang menyelesaikan
-                    proyek tepat waktu dan di bawah anggaran.
-                </p>
+                        <div className="relative z-10">
+                            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 tracking-tight">
+                                Ready to start better budgeting?
+                            </h2>
+                            <p className="text-lg md:text-xl opacity-90 mb-10 max-w-2xl mx-auto leading-relaxed">
+                                Join thousands of construction professionals who deliver projects
+                                on time and under budget.
+                            </p>
 
-                <div className="relative z-10 flex flex-col sm:flex-row gap-4 justify-center">
-                    <Link href="/signup">
-                        <Button className="h-14 px-8 bg-white text-[#bf5c3b] font-bold text-lg shadow-lg hover:bg-gray-100 transition-colors">
-                            Mulai Uji Coba Gratis
-                        </Button>
-                    </Link>
-                    <Button
-                        variant="outline"
-                        className="h-14 px-8 bg-[#bf5c3b] border-2 border-white/30 text-white font-bold text-lg hover:bg-[#bf5c3b]/80 transition-colors"
-                    >
-                        Lihat Demo Sekarang
-                    </Button>
-                </div>
+                            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                                <Link href="/signup">
+                                    <Button
+                                        size="lg"
+                                        variant="secondary"
+                                        className="gap-2 shadow-lg font-semibold"
+                                    >
+                                        Start 14-Day Free Trial
+                                        <ArrowRight className="size-4" />
+                                    </Button>
+                                </Link>
+                                <Button
+                                    size="lg"
+                                    variant="outline"
+                                    className="gap-2 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 font-semibold"
+                                >
+                                    Schedule Demo
+                                </Button>
+                            </div>
 
-                <p className="relative z-10 mt-6 text-sm text-white/70">
-                    Tidak perlu kartu kredit. Uji coba gratis 14 hari.
-                </p>
+                            {/* Trust Indicators */}
+                            <div className="flex flex-wrap justify-center gap-6 text-sm opacity-80">
+                                {trustPoints.map((point) => {
+                                    const Icon = point.icon;
+                                    return (
+                                        <div key={point.text} className="flex items-center gap-2">
+                                            <Icon className="size-4" />
+                                            <span>{point.text}</span>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         </section>
     );

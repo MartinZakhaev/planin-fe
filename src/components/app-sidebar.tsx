@@ -29,7 +29,8 @@ import {
   Hammer,
   Wrench,
   HardHat,
-  Package
+  Package,
+  Shield
 } from "lucide-react"
 
 // Updated menu structure
@@ -38,6 +39,7 @@ const menuGroups = [
     label: "Admin & Billing",
     items: [
       { title: "Users", url: "/dashboard/users", icon: Users },
+      { title: "Roles", url: "/dashboard/roles", icon: Shield },
       { title: "Organizations", url: "/dashboard/organizations", icon: Building2 },
       { title: "Plans", url: "/dashboard/plans", icon: FileText },
       { title: "Subscriptions", url: "/dashboard/subscriptions", icon: CreditCard },
