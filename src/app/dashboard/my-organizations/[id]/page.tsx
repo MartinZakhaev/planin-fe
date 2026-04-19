@@ -199,7 +199,7 @@ export default function OrgDetailPage({ params }: { params: Promise<{ id: string
                         <Users className="size-3.5" />
                         Members
                         {members.length > 0 && (
-                            <span className="ml-0.5 text-[10px] font-semibold text-muted-foreground">
+                            <span className="ml-1 inline-flex items-center justify-center rounded-full bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground min-w-[18px]">
                                 {members.length}
                             </span>
                         )}
