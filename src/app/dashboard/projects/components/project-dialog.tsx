@@ -145,7 +145,7 @@ export function ProjectDialog({ open, onOpenChange, project, onSubmit }: Project
                                             onValueChange={(value) => setValue("organizationId", value)}
                                             disabled={!!project}
                                         >
-                                            <SelectTrigger id="organizationId">
+                                            <SelectTrigger id="organizationId" className="w-full">
                                                 <SelectValue placeholder="Select org" />
                                             </SelectTrigger>
                                             <SelectContent>
@@ -207,7 +207,7 @@ export function ProjectDialog({ open, onOpenChange, project, onSubmit }: Project
                                             value={selectedCurrency}
                                             onValueChange={(value) => setValue("currency", value)}
                                         >
-                                            <SelectTrigger id="currency">
+                                            <SelectTrigger id="currency" className="w-full">
                                                 <SelectValue placeholder="Select currency" />
                                             </SelectTrigger>
                                             <SelectContent>
