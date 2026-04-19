@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, Building2, Hash, MapPin, Percent, Coins, FileText, ArrowRight } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useOrganizations } from "@/hooks/use-organizations";
 import {
@@ -25,6 +25,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 
 interface ProjectDialogProps {
     open: boolean;
@@ -39,6 +40,7 @@ export function ProjectDialog({ open, onOpenChange, project, onSubmit }: Project
     const { organizations } = useOrganizations();
 
     const selectedOrgId = watch("organizationId");
+    const selectedCurrency = watch("currency") || "IDR";
 
     useEffect(() => {
         if (open) {
@@ -68,104 +70,210 @@ export function ProjectDialog({ open, onOpenChange, project, onSubmit }: Project
         if (!project && user) {
             data.ownerUserId = user.id;
         }
-        // Convert taxRatePercent to number
         data.taxRatePercent = Number(data.taxRatePercent);
         await onSubmit(data);
     };
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[525px]">
-                <DialogHeader>
-                    <DialogTitle>{project ? "Edit Project" : "Create Project"}</DialogTitle>
-                    <DialogDescription>
-                        {project ? "Update project details." : "Create a new RAB project."}
-                    </DialogDescription>
+            <DialogContent className="sm:max-w-[560px] max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden">
+                {/* Header */}
+                <DialogHeader className="px-6 py-5 pb-4 border-b border-border/50 shrink-0">
+                    <div className="flex items-center gap-3">
+                        <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
+                            <Building2 className="size-5" />
+                        </div>
+                        <div className="min-w-0">
+                            <DialogTitle className="text-base leading-tight">
+                                {project ? "Edit Project" : "Create New Project"}
+                            </DialogTitle>
+                            <DialogDescription className="text-xs mt-0.5 leading-tight">
+                                {project
+                                    ? "Update the project details below."
+                                    : "Set up a new RAB project for your organization."}
+                            </DialogDescription>
+                        </div>
+                    </div>
                 </DialogHeader>
-                <form onSubmit={handleSubmit(onFormSubmit)} className="grid gap-4 py-4">
-                    <div className="grid gap-2">
-                        <Label htmlFor="name">Project Name *</Label>
-                        <Input id="name" {...register("name", { required: true })} placeholder="Rumah Tinggal 2 Lantai" />
-                        {errors.name && <span className="text-destructive text-xs">Required</span>}
-                    </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="code">Project Code</Label>
-                            <Input id="code" {...register("code")} placeholder="PRJ-001" />
+                {/* Scrollable Form Content */}
+                <div className="flex-1 overflow-y-auto px-6 py-5">
+                    <div className="space-y-5">
+                        {/* Project Details */}
+                        <div className="space-y-3">
+                            <div className="space-y-1.5">
+                                <h3 className="text-xs font-medium text-foreground/80 uppercase tracking-wide">Project Details</h3>
+                                <p className="text-[11px] text-muted-foreground">Basic information about the project</p>
+                            </div>
+                            <div className="rounded-lg border border-border/50 bg-muted/20 p-4 space-y-3">
+                                {/* Project Name */}
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <Label htmlFor="name" className="text-xs font-medium text-foreground/80">
+                                            Project Name <span className="text-destructive ml-0.5">*</span>
+                                        </Label>
+                                    </div>
+                                    <Input
+                                        id="name"
+                                        placeholder="e.g., Rumah Tinggal 2 Lantai"
+                                        {...register("name", { required: "Project name is required" })}
+                                        aria-invalid={!!errors.name}
+                                    />
+                                    {errors.name && (
+                                        <p className="text-xs text-destructive">{errors.name.message}</p>
+                                    )}
+                                </div>
+
+                                {/* Project Code & Organization */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="code" className="text-xs font-medium text-foreground/80">
+                                            Project Code
+                                        </Label>
+                                        <Input
+                                            id="code"
+                                            placeholder="PRJ-001"
+                                            {...register("code")}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="organizationId" className="text-xs font-medium text-foreground/80">
+                                            Organization <span className="text-destructive ml-0.5">*</span>
+                                        </Label>
+                                        <Select
+                                            value={selectedOrgId}
+                                            onValueChange={(value) => setValue("organizationId", value)}
+                                            disabled={!!project}
+                                        >
+                                            <SelectTrigger id="organizationId">
+                                                <SelectValue placeholder="Select org" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {organizations.map((org) => (
+                                                    <SelectItem key={org.id} value={org.id}>
+                                                        {org.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        {errors.organizationId && (
+                                            <p className="text-xs text-destructive">{errors.organizationId.message}</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="organizationId">Organization *</Label>
-                            <Select
-                                value={selectedOrgId}
-                                onValueChange={(value) => setValue("organizationId", value)}
-                                disabled={!!project}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select organization" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {organizations.map((org) => (
-                                        <SelectItem key={org.id} value={org.id}>
-                                            {org.name}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                            {errors.organizationId && <span className="text-destructive text-xs">Required</span>}
+
+                        {/* Location & Finance */}
+                        <div className="space-y-3">
+                            <div className="space-y-1.5">
+                                <h3 className="text-xs font-medium text-foreground/80 uppercase tracking-wide">Location & Finance</h3>
+                                <p className="text-[11px] text-muted-foreground">Project location and tax configuration</p>
+                            </div>
+                            <div className="rounded-lg border border-border/50 bg-muted/20 p-4 space-y-3">
+                                {/* Location */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="location" className="text-xs font-medium text-foreground/80">
+                                        Location
+                                    </Label>
+                                    <Input
+                                        id="location"
+                                        placeholder="e.g., Jakarta Selatan"
+                                        {...register("location")}
+                                    />
+                                </div>
+
+                                {/* Tax Rate & Currency */}
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="taxRatePercent" className="text-xs font-medium text-foreground/80">
+                                            Tax Rate (%)
+                                        </Label>
+                                        <Input
+                                            id="taxRatePercent"
+                                            type="number"
+                                            step="0.01"
+                                            min="0"
+                                            max="100"
+                                            placeholder="11"
+                                            {...register("taxRatePercent")}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="currency" className="text-xs font-medium text-foreground/80">
+                                            Currency
+                                        </Label>
+                                        <Select
+                                            value={selectedCurrency}
+                                            onValueChange={(value) => setValue("currency", value)}
+                                        >
+                                            <SelectTrigger id="currency">
+                                                <SelectValue placeholder="Select currency" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="IDR">IDR (Indonesian Rupiah)</SelectItem>
+                                                <SelectItem value="USD">USD (US Dollar)</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Description */}
+                        <div className="space-y-3">
+                            <div className="space-y-1.5">
+                                <h3 className="text-xs font-medium text-foreground/80 uppercase tracking-wide">Additional Info</h3>
+                                <p className="text-[11px] text-muted-foreground">Optional project description</p>
+                            </div>
+                            <div className="rounded-lg border border-border/50 bg-muted/20 p-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="description" className="text-xs font-medium text-foreground/80">
+                                        Description
+                                    </Label>
+                                    <Textarea
+                                        id="description"
+                                        placeholder="Describe the project scope, objectives, or any relevant details..."
+                                        rows={3}
+                                        className="resize-none"
+                                        {...register("description")}
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="location">Location</Label>
-                        <Input id="location" {...register("location")} placeholder="Jakarta Selatan" />
-                    </div>
-
-                    <div className="grid gap-2">
-                        <Label htmlFor="description">Description</Label>
-                        <Textarea
-                            id="description"
-                            {...register("description")}
-                            placeholder="Project description..."
-                            rows={3}
-                        />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="grid gap-2">
-                            <Label htmlFor="taxRatePercent">Tax Rate (%)</Label>
-                            <Input
-                                id="taxRatePercent"
-                                type="number"
-                                step="0.01"
-                                {...register("taxRatePercent")}
-                                placeholder="11"
-                            />
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="currency">Currency</Label>
-                            <Select
-                                value={watch("currency") || "IDR"}
-                                onValueChange={(value) => setValue("currency", value)}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select currency" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="IDR">IDR</SelectItem>
-                                    <SelectItem value="USD">USD</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-
-                    <DialogFooter>
-                        <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {project ? "Save Changes" : "Create Project"}
-                        </Button>
-                    </DialogFooter>
-                </form>
+                {/* Footer - Fixed at bottom */}
+                <DialogFooter className="px-6 py-4 border-t border-border/50 bg-muted/20 shrink-0 gap-2">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => onOpenChange(false)}
+                        disabled={isSubmitting}
+                        className="h-9 px-4"
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        onClick={handleSubmit(onFormSubmit)}
+                        className="h-9 px-4 gap-2"
+                    >
+                        {isSubmitting ? (
+                            <>
+                                <Loader2 className="size-4 animate-spin" />
+                                Saving...
+                            </>
+                        ) : (
+                            <>
+                                {project ? "Save Changes" : "Create Project"}
+                                <ArrowRight className="size-4" />
+                            </>
+                        )}
+                    </Button>
+                </DialogFooter>
             </DialogContent>
         </Dialog>
     );
