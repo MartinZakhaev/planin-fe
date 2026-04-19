@@ -70,6 +70,7 @@ const regularUserMenuGroups = [
     label: "Workspace",
     items: [
       { title: "My Organizations", url: "/dashboard/my-organizations", icon: Building2 },
+      { title: "Billing", url: "/dashboard/billing", icon: CreditCard },
     ]
   },
   {
