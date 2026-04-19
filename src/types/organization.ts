@@ -4,6 +4,8 @@ export interface Organization {
     code: string;
     ownerUserId: string;
     createdAt: string;
+    memberCount?: number;
+    projectCount?: number;
 }
 
 export interface CreateOrgDto {
@@ -25,9 +27,9 @@ export interface OrgMember {
     createdAt: string;
     user?: {
         id: string;
-        fullName: string;
+        fullName: string | null;
         email: string;
-        profileFileId?: string;
+        image?: string | null;
     };
 }
 

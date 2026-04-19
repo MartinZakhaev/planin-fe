@@ -64,8 +64,14 @@ const superadminMenuGroups = [
   }
 ];
 
-// Regular user menu - projects only
+// Regular user menu - workspace + projects
 const regularUserMenuGroups = [
+  {
+    label: "Workspace",
+    items: [
+      { title: "My Organizations", url: "/dashboard/my-organizations", icon: Building2 },
+    ]
+  },
   {
     label: "Projects",
     items: [
