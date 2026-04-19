@@ -42,7 +42,7 @@ export default function ProjectDetailsPage() {
     const [project, setProject] = useState<ProjectDetails | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [activeTab, setActiveTab] = useState("overview");
+    const [activeTab, setActiveTab] = useState("details");
 
     const fetchProject = useCallback(async () => {
         try {
@@ -136,6 +136,10 @@ export default function ProjectDetailsPage() {
                             </Link>
                         </Button>
                         <TabsList className="grid w-full max-w-md grid-cols-3">
+                            <TabsTrigger value="details" className="flex items-center gap-2">
+                                <List className="h-4 w-4" />
+                                <span className="hidden sm:inline">Details</span>
+                            </TabsTrigger>
                             <TabsTrigger value="overview" className="flex items-center gap-2">
                                 <LayoutDashboard className="h-4 w-4" />
                                 <span className="hidden sm:inline">Overview</span>
@@ -144,20 +148,8 @@ export default function ProjectDetailsPage() {
                                 <BarChart3 className="h-4 w-4" />
                                 <span className="hidden sm:inline">Statistics</span>
                             </TabsTrigger>
-                            <TabsTrigger value="details" className="flex items-center gap-2">
-                                <List className="h-4 w-4" />
-                                <span className="hidden sm:inline">Details</span>
-                            </TabsTrigger>
                         </TabsList>
                     </div>
-
-                    <TabsContent value="overview" className="mt-6">
-                        <OverviewTab project={project} formatCurrency={formatCurrency} />
-                    </TabsContent>
-
-                    <TabsContent value="statistics" className="mt-6">
-                        <StatisticsTab project={project} formatCurrency={formatCurrency} />
-                    </TabsContent>
 
                     <TabsContent value="details" className="mt-6">
                         <DetailsTab
@@ -165,6 +157,14 @@ export default function ProjectDetailsPage() {
                             formatCurrency={formatCurrency}
                             onRefresh={handleRefresh}
                         />
+                    </TabsContent>
+
+                    <TabsContent value="overview" className="mt-6">
+                        <OverviewTab project={project} formatCurrency={formatCurrency} />
+                    </TabsContent>
+
+                    <TabsContent value="statistics" className="mt-6">
+                        <StatisticsTab project={project} formatCurrency={formatCurrency} />
                     </TabsContent>
                 </Tabs>
             </div>

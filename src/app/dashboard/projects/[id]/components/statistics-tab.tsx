@@ -27,7 +27,7 @@ interface ItemBreakdown {
 
 export function StatisticsTab({ project, formatCurrency }: StatisticsTabProps) {
     // Calculate breakdown by item type
-    const calculateItemBreakdown = (): ItemBreakdown[] => {
+    const calculateItemBreakdown = (): ItemBreakdown & { barColor: string }[] => {
         const breakdown = {
             MATERIAL: { total: 0, count: 0 },
             MANPOWER: { total: 0, count: 0 },
@@ -52,27 +52,30 @@ export function StatisticsTab({ project, formatCurrency }: StatisticsTabProps) {
             {
                 type: "MATERIAL",
                 label: "Material",
-                icon: <Package className="h-5 w-5" />,
-                color: "text-blue-600",
-                bgColor: "bg-blue-100 dark:bg-blue-950",
+                icon: <Package className="size-4" />,
+                color: "text-blue-600 dark:text-blue-400",
+                bgColor: "bg-blue-50 dark:bg-blue-500/10",
+                barColor: "bg-blue-500 dark:bg-blue-600",
                 total: breakdown.MATERIAL.total,
                 count: breakdown.MATERIAL.count,
             },
             {
                 type: "MANPOWER",
                 label: "Manpower",
-                icon: <Users className="h-5 w-5" />,
-                color: "text-green-600",
-                bgColor: "bg-green-100 dark:bg-green-950",
+                icon: <Users className="size-4" />,
+                color: "text-emerald-600 dark:text-emerald-400",
+                bgColor: "bg-emerald-50 dark:bg-emerald-500/10",
+                barColor: "bg-emerald-500 dark:bg-emerald-600",
                 total: breakdown.MANPOWER.total,
                 count: breakdown.MANPOWER.count,
             },
             {
                 type: "TOOL",
                 label: "Tools",
-                icon: <Wrench className="h-5 w-5" />,
-                color: "text-orange-600",
-                bgColor: "bg-orange-100 dark:bg-orange-950",
+                icon: <Wrench className="size-4" />,
+                color: "text-amber-600 dark:text-amber-400",
+                bgColor: "bg-amber-50 dark:bg-amber-500/10",
+                barColor: "bg-amber-500 dark:bg-amber-600",
                 total: breakdown.TOOL.total,
                 count: breakdown.TOOL.count,
             },
@@ -105,34 +108,34 @@ export function StatisticsTab({ project, formatCurrency }: StatisticsTabProps) {
         <div className="space-y-6">
             {/* Summary Stats */}
             <div className="grid gap-4 md:grid-cols-4">
-                <Card>
-                    <CardContent className="pt-6">
-                        <p className="text-sm text-muted-foreground">Total Material Cost</p>
-                        <p className="text-xl font-bold text-blue-600">
+                <Card className="shadow-sm border-slate-200 dark:border-slate-800">
+                    <CardContent className="p-5 flex flex-col gap-1.5">
+                        <p className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 truncate">Total Material Cost</p>
+                        <p className="text-2xl font-semibold font-mono tracking-tight text-slate-900 dark:text-slate-100 truncate">
                             {formatCurrency(itemBreakdown[0].total, project.currency)}
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardContent className="pt-6">
-                        <p className="text-sm text-muted-foreground">Total Manpower Cost</p>
-                        <p className="text-xl font-bold text-green-600">
+                <Card className="shadow-sm border-slate-200 dark:border-slate-800">
+                    <CardContent className="p-5 flex flex-col gap-1.5">
+                        <p className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 truncate">Total Manpower Cost</p>
+                        <p className="text-2xl font-semibold font-mono tracking-tight text-slate-900 dark:text-slate-100 truncate">
                             {formatCurrency(itemBreakdown[1].total, project.currency)}
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardContent className="pt-6">
-                        <p className="text-sm text-muted-foreground">Total Tools Cost</p>
-                        <p className="text-xl font-bold text-orange-600">
+                <Card className="shadow-sm border-slate-200 dark:border-slate-800">
+                    <CardContent className="p-5 flex flex-col gap-1.5">
+                        <p className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 truncate">Total Tools Cost</p>
+                        <p className="text-2xl font-semibold font-mono tracking-tight text-slate-900 dark:text-slate-100 truncate">
                             {formatCurrency(itemBreakdown[2].total, project.currency)}
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardContent className="pt-6">
-                        <p className="text-sm text-muted-foreground">Grand Total</p>
-                        <p className="text-xl font-bold text-primary">
+                <Card className="shadow-sm border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/20">
+                    <CardContent className="p-5 flex flex-col gap-1.5">
+                        <p className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 truncate">Grand Total</p>
+                        <p className="text-2xl font-semibold font-mono tracking-tight text-primary truncate">
                             {formatCurrency(grandTotal, project.currency)}
                         </p>
                     </CardContent>
@@ -140,49 +143,49 @@ export function StatisticsTab({ project, formatCurrency }: StatisticsTabProps) {
             </div>
 
             {/* Cost Breakdown by Type */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <PieChart className="h-5 w-5" />
+            <Card className="shadow-sm border-slate-200 dark:border-slate-800">
+                <CardHeader className="border-b border-slate-100 dark:border-slate-800/50 pb-4">
+                    <CardTitle className="flex items-center gap-2 text-base font-semibold">
+                        <PieChart className="size-4 text-slate-500" />
                         Cost Breakdown by Type
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-xs">
                         Distribution of costs across material, manpower, and tools
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                     {grandTotal === 0 ? (
-                        <div className="text-center py-8 text-muted-foreground">
+                        <div className="text-center py-8 text-sm text-slate-500">
                             No items added yet. Add items to see cost breakdown.
                         </div>
                     ) : (
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                             {itemBreakdown.map((item) => {
                                 const percentage = grandTotal > 0 ? (item.total / grandTotal) * 100 : 0;
                                 return (
-                                    <div key={item.type} className="space-y-2">
+                                    <div key={item.type} className="space-y-2.5">
                                         <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <div className={`p-2 rounded-lg ${item.bgColor} ${item.color}`}>
+                                            <div className="flex items-center gap-3">
+                                                <div className={`p-2 rounded-md ${item.bgColor} ${item.color} shadow-sm border border-slate-100 dark:border-slate-800/50`}>
                                                     {item.icon}
                                                 </div>
                                                 <div>
-                                                    <p className="font-medium">{item.label}</p>
-                                                    <p className="text-xs text-muted-foreground">
+                                                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{item.label}</p>
+                                                    <p className="text-xs text-slate-500">
                                                         {item.count} items
                                                     </p>
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <p className="font-bold">{formatCurrency(item.total, project.currency)}</p>
-                                                <p className="text-xs text-muted-foreground">
+                                                <p className="text-sm font-semibold font-mono text-slate-900 dark:text-slate-100">{formatCurrency(item.total, project.currency)}</p>
+                                                <p className="text-xs font-medium text-slate-500">
                                                     {percentage.toFixed(1)}%
                                                 </p>
                                             </div>
                                         </div>
-                                        <div className="h-2 bg-muted rounded-full overflow-hidden">
+                                        <div className="h-1.5 bg-slate-100 dark:bg-slate-800/80 rounded-full overflow-hidden">
                                             <div
-                                                className={`h-full ${item.bgColor} transition-all duration-500`}
+                                                className={`h-full ${item.barColor} transition-all duration-500`}
                                                 style={{ width: `${percentage}%` }}
                                             />
                                         </div>
@@ -195,45 +198,45 @@ export function StatisticsTab({ project, formatCurrency }: StatisticsTabProps) {
             </Card>
 
             {/* Division Breakdown */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <TrendingUp className="h-5 w-5" />
+            <Card className="shadow-sm border-slate-200 dark:border-slate-800">
+                <CardHeader className="border-b border-slate-100 dark:border-slate-800/50 pb-4">
+                    <CardTitle className="flex items-center gap-2 text-base font-semibold">
+                        <TrendingUp className="size-4 text-slate-500" />
                         Cost by Division
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-xs">
                         Budget allocation across work divisions
                     </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                     {divisionBreakdown.length === 0 ? (
-                        <div className="text-center py-8 text-muted-foreground">
+                        <div className="text-center py-8 text-sm text-slate-500">
                             No divisions added yet. Add divisions to see cost allocation.
                         </div>
                     ) : (
-                        <div className="space-y-4">
+                        <div className="space-y-6">
                             {divisionBreakdown.map((div) => {
                                 const widthPercentage = maxDivisionTotal > 0 ? (div.total / maxDivisionTotal) * 100 : 0;
                                 const sharePercentage = grandTotal > 0 ? (div.total / grandTotal) * 100 : 0;
                                 return (
-                                    <div key={div.id} className="space-y-2">
+                                    <div key={div.id} className="space-y-2.5">
                                         <div className="flex items-center justify-between">
                                             <div>
-                                                <p className="font-medium">{div.name}</p>
-                                                <p className="text-xs text-muted-foreground">
+                                                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{div.name}</p>
+                                                <p className="text-xs text-slate-500">
                                                     {div.taskCount} tasks • {div.itemCount} items
                                                 </p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="font-bold">{formatCurrency(div.total, project.currency)}</p>
-                                                <p className="text-xs text-muted-foreground">
+                                                <p className="text-sm font-semibold font-mono text-slate-900 dark:text-slate-100">{formatCurrency(div.total, project.currency)}</p>
+                                                <p className="text-xs font-medium text-slate-500">
                                                     {sharePercentage.toFixed(1)}% of total
                                                 </p>
                                             </div>
                                         </div>
-                                        <div className="h-3 bg-muted rounded-full overflow-hidden">
+                                        <div className="h-1.5 bg-slate-100 dark:bg-slate-800/80 rounded-full overflow-hidden">
                                             <div
-                                                className="h-full bg-primary/70 transition-all duration-500 rounded-full"
+                                                className="h-full bg-slate-800 dark:bg-slate-300 transition-all duration-500 rounded-full"
                                                 style={{ width: `${widthPercentage}%` }}
                                             />
                                         </div>

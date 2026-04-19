@@ -54,17 +54,17 @@ export function OverviewTab({ project, formatCurrency }: OverviewTabProps) {
     return (
         <div className="space-y-6">
             {/* Project Info Card */}
-            <Card>
+            <Card className="shadow-sm border-slate-200 dark:border-slate-800">
                 <CardHeader>
                     <div className="flex items-start justify-between">
                         <div>
-                            <CardTitle className="text-2xl">{project.name}</CardTitle>
-                            <div className="flex items-center gap-2 mt-1">
+                            <CardTitle className="text-2xl font-semibold tracking-tight">{project.name}</CardTitle>
+                            <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                                 {project.code && (
-                                    <Badge variant="outline">{project.code}</Badge>
+                                    <Badge variant="outline" className="font-mono">{project.code}</Badge>
                                 )}
-                                <span className="text-xs text-muted-foreground flex items-center gap-1">
-                                    <Calendar className="h-3 w-3" />
+                                <span className="text-xs text-muted-foreground flex items-center gap-1.5">
+                                    <Calendar className="size-3.5" />
                                     Updated {new Date(project.updatedAt).toLocaleDateString("id-ID", {
                                         year: "numeric",
                                         month: "long",
@@ -75,34 +75,34 @@ export function OverviewTab({ project, formatCurrency }: OverviewTabProps) {
                                 </span>
                             </div>
                             {project.description && (
-                                <CardDescription className="mt-2">{project.description}</CardDescription>
+                                <CardDescription className="mt-3 text-sm leading-relaxed max-w-2xl text-slate-600 dark:text-slate-400">{project.description}</CardDescription>
                             )}
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
+                            <Badge variant="secondary" className="px-3 py-1 font-mono tracking-tight text-sm font-semibold">{project.currency}</Badge>
                             <ExportPdfButton project={project} formatCurrency={formatCurrency} />
-                            <Badge variant="secondary" className="text-lg">{project.currency}</Badge>
                         </div>
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div className="grid gap-4 md:grid-cols-4">
-                        <div className="flex items-center gap-2">
-                            <Building2 className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm">{project.organization.name}</span>
+                    <div className="grid gap-x-6 gap-y-4 md:grid-cols-4 pt-2 border-t border-slate-100 dark:border-slate-800">
+                        <div className="flex items-center gap-2.5">
+                            <Building2 className="size-4 max-w-fit shrink-0 text-slate-400" />
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{project.organization.name}</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <User className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm">{project.owner.fullName}</span>
+                        <div className="flex items-center gap-2.5">
+                            <User className="size-4 max-w-fit shrink-0 text-slate-400" />
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{project.owner.fullName}</span>
                         </div>
                         {project.location && (
-                            <div className="flex items-center gap-2">
-                                <MapPin className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm">{project.location}</span>
+                            <div className="flex items-center gap-2.5">
+                                <MapPin className="size-4 max-w-fit shrink-0 text-slate-400" />
+                                <span className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">{project.location}</span>
                             </div>
                         )}
-                        <div className="flex items-center gap-2">
-                            <Percent className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm">Tax: {project.taxRatePercent}%</span>
+                        <div className="flex items-center gap-2.5">
+                            <Percent className="size-4 max-w-fit shrink-0 text-slate-400" />
+                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate">Tax: <span className="font-mono">{project.taxRatePercent}%</span></span>
                         </div>
                     </div>
                 </CardContent>
@@ -110,38 +110,38 @@ export function OverviewTab({ project, formatCurrency }: OverviewTabProps) {
 
             {/* Quick Stats */}
             <div className="grid gap-4 md:grid-cols-3">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Work Divisions</CardTitle>
-                        <FolderOpen className="h-4 w-4 text-muted-foreground" />
+                <Card className="shadow-sm border-slate-200 dark:border-slate-800">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                        <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Work Divisions</CardTitle>
+                        <FolderOpen className="size-4 text-slate-400" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{totalDivisions}</div>
-                        <p className="text-xs text-muted-foreground">
+                        <div className="text-3xl font-semibold font-mono tracking-tight text-slate-900 dark:text-slate-100">{totalDivisions}</div>
+                        <p className="text-xs text-muted-foreground mt-1">
                             Sections of work
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Tasks</CardTitle>
-                        <ListTodo className="h-4 w-4 text-muted-foreground" />
+                <Card className="shadow-sm border-slate-200 dark:border-slate-800">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                        <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Tasks</CardTitle>
+                        <ListTodo className="size-4 text-slate-400" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{totalTasks}</div>
-                        <p className="text-xs text-muted-foreground">
+                        <div className="text-3xl font-semibold font-mono tracking-tight text-slate-900 dark:text-slate-100">{totalTasks}</div>
+                        <p className="text-xs text-muted-foreground mt-1">
                             Across all divisions
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Line Items</CardTitle>
-                        <Package className="h-4 w-4 text-muted-foreground" />
+                <Card className="shadow-sm border-slate-200 dark:border-slate-800">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                        <CardTitle className="text-sm font-medium text-slate-600 dark:text-slate-400">Line Items</CardTitle>
+                        <Package className="size-4 text-slate-400" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{totalItems}</div>
-                        <p className="text-xs text-muted-foreground">
+                        <div className="text-3xl font-semibold font-mono tracking-tight text-slate-900 dark:text-slate-100">{totalItems}</div>
+                        <p className="text-xs text-muted-foreground mt-1">
                             Materials, manpower & tools
                         </p>
                     </CardContent>
@@ -149,26 +149,26 @@ export function OverviewTab({ project, formatCurrency }: OverviewTabProps) {
             </div>
 
             {/* RAB Summary Card */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <DollarSign className="h-5 w-5" />
+            <Card className="shadow-sm border-slate-200 dark:border-slate-800">
+                <CardHeader className="border-b border-slate-100 dark:border-slate-800/50 pb-4">
+                    <CardTitle className="flex items-center gap-2 text-base font-semibold">
+                        <DollarSign className="size-4 text-slate-500" />
                         RAB Summary
                     </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                     <div className="grid gap-4 md:grid-cols-3">
-                        <div className="rounded-lg bg-muted p-4">
-                            <p className="text-sm text-muted-foreground">Subtotal</p>
-                            <p className="text-2xl font-bold">{formatCurrency(calculateProjectSubtotal(), project.currency)}</p>
+                        <div className="rounded-lg bg-slate-50 dark:bg-slate-800/50 p-5 border border-slate-100 dark:border-slate-800">
+                            <p className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 mb-1.5">Subtotal</p>
+                            <p className="text-2xl font-semibold font-mono tracking-tight text-slate-900 dark:text-slate-100">{formatCurrency(calculateProjectSubtotal(), project.currency)}</p>
                         </div>
-                        <div className="rounded-lg bg-muted p-4">
-                            <p className="text-sm text-muted-foreground">Tax ({project.taxRatePercent}%)</p>
-                            <p className="text-2xl font-bold">{formatCurrency(calculateTax(), project.currency)}</p>
+                        <div className="rounded-lg bg-slate-50 dark:bg-slate-800/50 p-5 border border-slate-100 dark:border-slate-800">
+                            <p className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 mb-1.5">Tax ({project.taxRatePercent}%)</p>
+                            <p className="text-2xl font-semibold font-mono tracking-tight text-slate-900 dark:text-slate-100">{formatCurrency(calculateTax(), project.currency)}</p>
                         </div>
-                        <div className="rounded-lg bg-primary/10 p-4">
-                            <p className="text-sm text-muted-foreground">Grand Total</p>
-                            <p className="text-2xl font-bold text-primary">{formatCurrency(calculateGrandTotal(), project.currency)}</p>
+                        <div className="rounded-lg bg-blue-50 dark:bg-blue-900/20 p-5 border border-blue-100 dark:border-blue-900/50">
+                            <p className="text-[11px] uppercase tracking-wider font-semibold text-blue-600 dark:text-blue-400 mb-1.5">Grand Total</p>
+                            <p className="text-2xl font-semibold font-mono tracking-tight text-blue-700 dark:text-blue-400">{formatCurrency(calculateGrandTotal(), project.currency)}</p>
                         </div>
                     </div>
                 </CardContent>

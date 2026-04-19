@@ -32,9 +32,10 @@ import {
   Package,
   Shield
 } from "lucide-react"
+import { useIsSuperadmin } from "@/hooks/use-permissions"
 
-// Updated menu structure
-const menuGroups = [
+// Superadmin menu - full access
+const superadminMenuGroups = [
   {
     label: "Admin & Billing",
     items: [
@@ -63,13 +64,26 @@ const menuGroups = [
   }
 ];
 
+// Regular user menu - projects only
+const regularUserMenuGroups = [
+  {
+    label: "Projects",
+    items: [
+      { title: "All Projects", url: "/dashboard/projects", icon: HardHat },
+    ]
+  }
+];
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
+  const isSuperadmin = useIsSuperadmin();
 
   // Temporary dummy teams for now
   const teams = [
     { name: "Acme Inc", logo: Building2, plan: "Enterprise" },
   ];
+
+  const menuGroups = isSuperadmin ? superadminMenuGroups : regularUserMenuGroups;
 
   return (
     <Sidebar collapsible="icon" {...props}>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Permission } from '@/types/role';
+import { useAuthContext } from '@/context/auth-context';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -46,4 +47,20 @@ export function usePermissions() {
         error,
         refresh: fetchPermissions,
     };
+}
+
+// Check if current user is superadmin based on role name
+export function useIsSuperadmin() {
+    const { user } = useAuthContext();
+
+    if (!user) return false;
+
+    const adminRoles = ['superadmin', 'admin'];
+
+    // Handle both string role (from auth.ts User) and object role (from user.ts User)
+    const role = user.role as string | { name?: string } | null | undefined;
+    if (!role) return false;
+
+    const roleName = typeof role === 'string' ? role : role.name;
+    return adminRoles.includes(roleName || '');
 }
