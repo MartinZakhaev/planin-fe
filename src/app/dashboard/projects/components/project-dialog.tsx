@@ -14,18 +14,20 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useEffect } from "react";
-import { Loader2, Building2, Hash, MapPin, Percent, Coins, FileText, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Loader2, Building2, Hash, MapPin, Percent, Coins, FileText, ArrowRight, Plus, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useOrganizations } from "@/hooks/use-organizations";
 import {
     Select,
     SelectContent,
     SelectItem,
+    SelectSeparator,
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { CreateOrgSheet } from "./create-org-sheet";
 
 interface ProjectDialogProps {
     open: boolean;
@@ -37,7 +39,14 @@ interface ProjectDialogProps {
 export function ProjectDialog({ open, onOpenChange, project, onSubmit }: ProjectDialogProps) {
     const { register, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting } } = useForm<CreateProjectDto & UpdateProjectDto>();
     const { user } = useAuth();
-    const { organizations } = useOrganizations();
+    const { organizations, isLoading: orgsLoading, refreshOrganizations } = useOrganizations();
+    const [createOrgOpen, setCreateOrgOpen] = useState(false);
+
+    const handleOrgCreated = (newOrgId: string) => {
+        refreshOrganizations();
+        setValue("organizationId", newOrgId);
+        setCreateOrgOpen(false);
+    };
 
     const selectedOrgId = watch("organizationId");
     const selectedCurrency = watch("currency") || "IDR";
@@ -67,6 +76,7 @@ export function ProjectDialog({ open, onOpenChange, project, onSubmit }: Project
     }, [open, project, reset, setValue, organizations]);
 
     const onFormSubmit = async (data: any) => {
+        if (!data.organizationId) return;
         if (!project && user) {
             data.ownerUserId = user.id;
         }
@@ -75,6 +85,12 @@ export function ProjectDialog({ open, onOpenChange, project, onSubmit }: Project
     };
 
     return (
+        <>
+        <CreateOrgSheet
+            open={createOrgOpen}
+            onOpenChange={setCreateOrgOpen}
+            onCreated={handleOrgCreated}
+        />
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="sm:max-w-[560px] max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden">
                 {/* Header */}
@@ -140,22 +156,55 @@ export function ProjectDialog({ open, onOpenChange, project, onSubmit }: Project
                                         <Label htmlFor="organizationId" className="text-xs font-medium text-foreground/80">
                                             Organization <span className="text-destructive ml-0.5">*</span>
                                         </Label>
-                                        <Select
-                                            value={selectedOrgId}
-                                            onValueChange={(value) => setValue("organizationId", value)}
-                                            disabled={!!project}
-                                        >
-                                            <SelectTrigger id="organizationId" className="w-full">
-                                                <SelectValue placeholder="Select org" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {organizations.map((org) => (
-                                                    <SelectItem key={org.id} value={org.id}>
-                                                        {org.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
+                                        {!orgsLoading && organizations.length === 0 && !project ? (
+                                            <div className="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-800 px-3 py-2.5 flex items-start gap-2">
+                                                <AlertCircle className="size-3.5 text-amber-500 shrink-0 mt-0.5" />
+                                                <div className="min-w-0">
+                                                    <p className="text-xs text-amber-700 dark:text-amber-300 leading-snug">No organizations yet.</p>
+                                                    <button
+                                                        type="button"
+                                                        className="text-xs text-amber-700 dark:text-amber-300 underline underline-offset-2 mt-0.5 hover:opacity-80 transition-opacity"
+                                                        onClick={() => setCreateOrgOpen(true)}
+                                                    >
+                                                        Create your first organization →
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="flex gap-1.5">
+                                                <Select
+                                                    value={selectedOrgId}
+                                                    onValueChange={(value) => setValue("organizationId", value)}
+                                                    disabled={!!project}
+                                                >
+                                                    <SelectTrigger id="organizationId" className="w-full">
+                                                        <SelectValue placeholder="Select org" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {organizations.map((org) => (
+                                                            <SelectItem key={org.id} value={org.id}>
+                                                                {org.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                        {!project && (
+                                                            <>
+                                                                <SelectSeparator />
+                                                                <div
+                                                                    className="flex items-center gap-2 px-2 py-1.5 text-xs text-muted-foreground cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm select-none"
+                                                                    onMouseDown={(e) => {
+                                                                        e.preventDefault();
+                                                                        setCreateOrgOpen(true);
+                                                                    }}
+                                                                >
+                                                                    <Plus className="size-3.5" />
+                                                                    New organization...
+                                                                </div>
+                                                            </>
+                                                        )}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        )}
                                         {errors.organizationId && (
                                             <p className="text-xs text-destructive">{errors.organizationId.message}</p>
                                         )}
@@ -257,7 +306,7 @@ export function ProjectDialog({ open, onOpenChange, project, onSubmit }: Project
                     </Button>
                     <Button
                         type="submit"
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || (!project && !selectedOrgId)}
                         onClick={handleSubmit(onFormSubmit)}
                         className="h-9 px-4 gap-2"
                     >
@@ -276,5 +325,6 @@ export function ProjectDialog({ open, onOpenChange, project, onSubmit }: Project
                 </DialogFooter>
             </DialogContent>
         </Dialog>
+        </>
     );
 }
