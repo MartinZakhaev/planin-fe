@@ -28,6 +28,13 @@ import {
     Crown,
     LayoutGrid,
 } from "lucide-react";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 const formatIDR = (priceCents: number) =>
     new Intl.NumberFormat("id-ID", {
@@ -107,12 +114,16 @@ function PlanCard({
     isCurrent,
     isCheckingOut,
     onUpgrade,
+    paymentMethod,
+    onPaymentMethodChange,
 }: {
     plan: Plan;
     subscription: ActiveSubscription | null;
     isCurrent: boolean;
     isCheckingOut: boolean;
     onUpgrade: (planId: string) => void;
+    paymentMethod: string;
+    onPaymentMethodChange: (method: string) => void;
 }) {
     const meta = PLAN_META[plan.code] ?? PLAN_META["STARTER"];
     const Icon = meta.icon;
@@ -180,6 +191,21 @@ function PlanCard({
                     ))}
                 </div>
 
+                {/* Payment method selector */}
+                {!isActive && (
+                    <div className="mt-4">
+                        <Select value={paymentMethod} onValueChange={onPaymentMethodChange}>
+                            <SelectTrigger className="h-8 text-xs">
+                                <SelectValue placeholder="Select payment" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="midtrans">Midtrans</SelectItem>
+                                <SelectItem value="doku">Doku</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                )}
+
                 {/* CTA */}
                 <div className="mt-5">
                     {isActive ? (
@@ -216,13 +242,20 @@ function PlanCard({
 }
 
 export default function BillingPage() {
-    const { subscription, plans, isLoading, checkout } = useBilling();
+    const { subscription, plans, isLoading, checkout, checkoutDoku } = useBilling();
     const [checkingOutPlanId, setCheckingOutPlanId] = useState<string | null>(null);
+    const [paymentMethod, setPaymentMethod] = useState<Record<string, string>>({});
 
     const handleUpgrade = async (planId: string) => {
         setCheckingOutPlanId(planId);
         try {
-            await checkout(planId);
+            const method = paymentMethod[planId] || "midtrans";
+            if (method === "doku") {
+                const result = await checkoutDoku(planId);
+                window.location.href = result.paymentUrl;
+            } else {
+                await checkout(planId);
+            }
         } catch {
             setCheckingOutPlanId(null);
         }
@@ -282,6 +315,10 @@ export default function BillingPage() {
                                         isCurrent={currentPlan?.id === plan.id}
                                         isCheckingOut={checkingOutPlanId === plan.id}
                                         onUpgrade={handleUpgrade}
+                                        paymentMethod={paymentMethod[plan.id] || "midtrans"}
+                                        onPaymentMethodChange={(method) =>
+                                            setPaymentMethod((prev) => ({ ...prev, [plan.id]: method }))
+                                        }
                                     />
                                 ))}
                             </div>

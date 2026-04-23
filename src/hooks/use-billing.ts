@@ -47,11 +47,20 @@ export function useBilling() {
         window.location.href = res.redirectUrl;
     };
 
+    const checkoutDoku = async (planId: string): Promise<{ paymentUrl: string; tokenId: string; expiredDate?: string; expiredDatetime?: string }> => {
+        const res = await fetcher<{ paymentUrl: string; tokenId: string; expiredDate?: string; expiredDatetime?: string }>("/subscriptions/checkout-doku", {
+            method: "POST",
+            body: JSON.stringify({ planId }),
+        });
+        return res;
+    };
+
     return {
         subscription: subscription ?? null,
         plans: plans ?? [],
         isLoading: subLoading || plansLoading,
         checkout,
+        checkoutDoku,
         mutate: mutateSub,
     };
 }
