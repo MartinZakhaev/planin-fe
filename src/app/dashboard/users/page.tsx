@@ -127,7 +127,7 @@ export default function UsersPage() {
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">
-                                {users.filter(u => u.role === 'admin' || u.role === 'ADMIN').length}
+                                {users.filter(u => u.role?.name === 'admin' || u.role?.name === 'ADMIN').length}
                             </div>
                             <p className="text-xs text-muted-foreground">Admin privileges</p>
                         </CardContent>
