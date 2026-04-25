@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (enrichedUser) {
             setUser(enrichedUser);
         } else if (data.user) {
-            setUser(data.user as AuthUser);
+            setUser(data.user as unknown as AuthUser);
         } else {
             throw new Error("No user data available from session");
         }
