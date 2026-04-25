@@ -26,13 +26,13 @@ export function Comparison() {
                                     <div>
                                         <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Forecasted Cost</p>
                                         <div className="flex items-baseline gap-2">
-                                            <span className="text-3xl font-semibold text-slate-900 dark:text-slate-100 font-mono tracking-tight">$2.4M</span>
+                                            <span className="text-3xl font-semibold text-slate-900 dark:text-slate-100 font-mono tracking-tight">Rp 2,4 M</span>
                                         </div>
                                     </div>
                                     <div>
                                         <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest mb-1.5">Variance vs Budget</p>
                                         <div className="flex items-baseline gap-2">
-                                            <span className="text-3xl font-semibold text-rose-600 dark:text-rose-500 font-mono tracking-tight">+$182K</span>
+                                            <span className="text-3xl font-semibold text-rose-600 dark:text-rose-500 font-mono tracking-tight">+Rp 182 jt</span>
                                             <span className="flex items-center text-xs font-semibold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-500/10 px-1.5 py-0.5 rounded-sm">
                                                 <TrendingUp className="size-3 mr-1" />
                                                 8.2%
@@ -60,7 +60,7 @@ export function Comparison() {
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <AlertCircle className="size-3.5 text-rose-500" />
-                                            <span className="font-mono text-rose-600 dark:text-rose-500 font-semibold">+$145K</span>
+                                            <span className="font-mono text-rose-600 dark:text-rose-500 font-semibold">+Rp 145 jt</span>
                                         </div>
                                     </div>
 
@@ -71,7 +71,7 @@ export function Comparison() {
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <TrendingDown className="size-3.5 text-emerald-500" />
-                                            <span className="font-mono text-emerald-600 dark:text-emerald-500 font-semibold">-$37K</span>
+                                            <span className="font-mono text-emerald-600 dark:text-emerald-500 font-semibold">-Rp 37 jt</span>
                                         </div>
                                     </div>
                                 </div>
@@ -88,7 +88,7 @@ export function Comparison() {
                             Spot cost overruns instantly.
                         </h2>
                         <p className="text-lg text-slate-600 dark:text-slate-400 leading-relaxed max-w-lg mb-10">
-                            Planin automatically correlates your field data with your original estimates. Stop waiting for end-of-month accounting to realize you're bleeding budget.
+                            Planin automatically correlates your field data with your original estimates. Stop waiting for end-of-month accounting to realize you are bleeding budget.
                         </p>
 
                         <div className="space-y-6 md:space-y-8">

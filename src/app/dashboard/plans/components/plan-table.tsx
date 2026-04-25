@@ -72,7 +72,11 @@ export function PlanTable({ plans, isLoading, onEdit, onDelete, onSelectionChang
                     </Button>
                 );
             },
-            cell: ({ row }) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: row.original.currency }).format(row.original.priceCents)
+            cell: ({ row }) => new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                maximumFractionDigits: 0,
+            }).format(row.original.priceCents / 100)
         },
         {
             accessorKey: "interval",

@@ -69,7 +69,6 @@ export function AddLineItemDialog({
     projectId,
     projectTaskId,
     taskName,
-    currency,
     onSuccess,
 }: AddLineItemDialogProps) {
     const [itemCatalogs, setItemCatalogs] = useState<ItemCatalog[]>([]);
@@ -123,7 +122,7 @@ export function AddLineItemDialog({
     const formatCurrency = (value: number) => {
         return new Intl.NumberFormat("id-ID", {
             style: "currency",
-            currency: currency,
+            currency: "IDR",
             minimumFractionDigits: 0,
         }).format(value);
     };
@@ -245,7 +244,7 @@ export function AddLineItemDialog({
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="unitPrice">Unit Price ({currency}) *</Label>
+                        <Label htmlFor="unitPrice">Unit Price (IDR) *</Label>
                         <Input
                             id="unitPrice"
                             type="number"

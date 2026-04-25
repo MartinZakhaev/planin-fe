@@ -8,7 +8,7 @@ const features = [
         title: "Real-time Cost Tracking",
         description:
             "Monitor expenses as they happen. Snap receipt photos and tag them to specific line items instantly.",
-        highlights: ["Instant sync across devices", "Receipt OCR scanning", "Multi-currency support"],
+        highlights: ["Instant sync across devices", "Receipt OCR scanning", "Rupiah-first reporting"],
         badge: "Popular",
     },
     {

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Project, CreateProjectDto, UpdateProjectDto } from "@/types/project";
 import { useProjects } from "@/hooks/use-projects";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, AlertTriangle, FolderKanban, Clock, DollarSign } from "lucide-react";
+import { Plus, Trash2, AlertTriangle, FolderKanban, Clock, BadgePercent } from "lucide-react";
 import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -124,7 +124,7 @@ export default function ProjectsPage() {
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">Default Tax</CardTitle>
-                            <DollarSign className="h-4 w-4 text-muted-foreground" />
+                            <BadgePercent className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
                             <div className="text-2xl font-bold">11%</div>

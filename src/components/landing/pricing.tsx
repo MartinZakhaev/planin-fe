@@ -1,18 +1,19 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check, X, ShieldCheck } from "lucide-react";
+import { Check, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 const plans = [
     {
-        name: "Basic",
-        description: "Free for individual contractors.",
-        price: "Rp 0",
+        name: "Free",
+        description: "For contractors validating their first estimates.",
+        priceCents: 0,
         period: "/month",
+        maxProjects: "3 projects",
         features: [
-            { name: "1 Active Project", included: true },
+            { name: "Up to 3 active projects", included: true },
             { name: "Basic Cost Tracking", included: true },
             { name: "Mobile App Access", included: true },
             { name: "Material Estimation", included: false },
@@ -22,36 +23,61 @@ const plans = [
         featured: false,
     },
     {
-        name: "Pro",
-        description: "Ideal for small construction teams.",
-        price: "Rp 750k",
+        name: "Starter",
+        description: "For small teams managing active construction budgets.",
+        priceCents: 9900000,
         period: "/month",
+        maxProjects: "10 projects",
         features: [
-            { name: "Unlimited Active Projects", included: true },
-            { name: "Advanced Analytics & Reports", included: true },
+            { name: "Up to 10 active projects", included: true },
+            { name: "Project budget tracking", included: true },
             { name: "Material & Labor Estimation", included: true },
-            { name: "Receipt Scanning (OCR)", included: true },
-            { name: "Priority Email Support", included: true },
+            { name: "RAB summaries and exports", included: true },
+            { name: "Priority Email Support", included: false },
         ],
         cta: "Start 14-Day Free Trial",
         featured: true,
     },
     {
-        name: "Enterprise",
-        description: "Custom solution for large organizations.",
-        price: "Custom",
-        period: "",
+        name: "Professional",
+        description: "For growing teams with multiple project controls.",
+        priceCents: 29900000,
+        period: "/month",
+        maxProjects: "50 projects",
         features: [
-            { name: "All Pro Features", included: true },
-            { name: "Dedicated Account Manager", included: true },
-            { name: "Custom API Integrations", included: true },
-            { name: "On-site Training & Setup", included: true },
-            { name: "Enterprise SLA & Security", included: true },
+            { name: "Up to 50 active projects", included: true },
+            { name: "Advanced analytics and reports", included: true },
+            { name: "Material & labor estimation", included: true },
+            { name: "Receipt scanning workflows", included: true },
+            { name: "Priority email support", included: true },
+        ],
+        cta: "Start 14-Day Free Trial",
+        featured: false,
+    },
+    {
+        name: "Enterprise",
+        description: "For organizations standardizing project finance.",
+        priceCents: 99900000,
+        period: "/month",
+        maxProjects: "Unlimited projects",
+        features: [
+            { name: "Unlimited active projects", included: true },
+            { name: "All Professional features", included: true },
+            { name: "Organization-wide controls", included: true },
+            { name: "Dedicated onboarding support", included: true },
+            { name: "Enterprise security workflows", included: true },
         ],
         cta: "Contact Us",
         featured: false,
     },
 ];
+
+const formatRupiah = (priceCents: number) =>
+    new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0,
+    }).format(priceCents / 100);
 
 export function Pricing() {
     return (
@@ -71,7 +97,7 @@ export function Pricing() {
                 </div>
 
                 {/* Pricing Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
                     {plans.map((plan) => (
                         <Card
                             key={plan.name}
@@ -93,13 +119,16 @@ export function Pricing() {
                                     {plan.description}
                                 </CardDescription>
                                 <div className="flex items-end gap-1.5 pt-4">
-                                    <span className="text-4xl font-bold">{plan.price}</span>
+                                    <span className="text-4xl font-bold">{formatRupiah(plan.priceCents)}</span>
                                     {plan.period && (
                                         <span className="text-muted-foreground mb-1.5">
                                             {plan.period}
                                         </span>
                                     )}
                                 </div>
+                                <p className="text-xs font-medium text-muted-foreground">
+                                    {plan.maxProjects}
+                                </p>
                             </CardHeader>
 
                             <CardContent className="flex-1">

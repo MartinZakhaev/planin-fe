@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, CheckCircle2, Shield, Clock } from "lucide-react";
+import { ArrowRight, CalendarDays, CheckCircle2, Shield, Clock } from "lucide-react";
 import Image from "next/image";
 
 const trustPoints = [
@@ -46,8 +46,9 @@ export function CTA() {
                                 <Button
                                     size="lg"
                                     variant="outline"
-                                    className="gap-2 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 font-semibold"
+                                    className="gap-2 border-white/80 bg-white/10 text-white shadow-lg backdrop-blur-sm hover:bg-white hover:text-primary font-semibold"
                                 >
+                                    <CalendarDays className="size-4" />
                                     Schedule Demo
                                 </Button>
                             </div>
@@ -57,7 +58,13 @@ export function CTA() {
                                 {trustPoints.map((point) => (
                                     <div key={point.text} className="flex items-center gap-2">
                                         {point.icon === "doku" ? (
-                                            <Image src="/doku_logo.svg" alt="Doku" width={18} height={18} className="brightness-0 invert" />
+                                            <Image
+                                                src="/doku_logo.svg"
+                                                alt="Doku"
+                                                width={18}
+                                                height={18}
+                                                className="shrink-0 rounded-[3px] shadow-sm"
+                                            />
                                         ) : (
                                             <point.icon className="size-4" />
                                         )}

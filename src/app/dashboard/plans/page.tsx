@@ -129,7 +129,7 @@ export default function PlansPage() {
                             <div className="text-2xl font-bold">
                                 {plans.length > 0
                                     ? new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(
-                                        plans.reduce((acc, p) => acc + (p.priceCents || 0), 0) / plans.length
+                                        (plans.reduce((acc, p) => acc + (p.priceCents || 0), 0) / plans.length) / 100
                                     )
                                     : 0}
                             </div>

@@ -14,8 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect } from "react";
-import { Loader2, Plus, X } from "lucide-react";
-import { Textarea } from "@/components/ui/textarea";
+import { Loader2 } from "lucide-react";
 
 interface PlanDialogProps {
     open: boolean;
@@ -25,7 +24,7 @@ interface PlanDialogProps {
 }
 
 export function PlanDialog({ open, onOpenChange, plan, onSubmit }: PlanDialogProps) {
-    const { register, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting } } = useForm<CreatePlanDto & UpdatePlanDto>();
+    const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<CreatePlanDto & UpdatePlanDto>();
 
 
     useEffect(() => {
@@ -50,7 +49,7 @@ export function PlanDialog({ open, onOpenChange, plan, onSubmit }: PlanDialogPro
         }
     }, [open, plan, reset, setValue]);
 
-    const onFormSubmit = async (data: any) => {
+    const onFormSubmit = async (data: CreatePlanDto | UpdatePlanDto) => {
         await onSubmit(data);
     };
 
@@ -79,7 +78,7 @@ export function PlanDialog({ open, onOpenChange, plan, onSubmit }: PlanDialogPro
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="priceCents">Price</Label>
+                            <Label htmlFor="priceCents">Price in cents (IDR)</Label>
                             <Input
                                 id="priceCents"
                                 type="number"
@@ -94,8 +93,7 @@ export function PlanDialog({ open, onOpenChange, plan, onSubmit }: PlanDialogPro
                                 className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                 {...register("currency", { required: true })}
                             >
-                                <option value="IDR">IDR</option>
-                                <option value="USD">USD</option>
+                                <option value="IDR">IDR (Indonesian Rupiah)</option>
                             </select>
                             {errors.currency && <span className="text-destructive text-xs">Required</span>}
                         </div>

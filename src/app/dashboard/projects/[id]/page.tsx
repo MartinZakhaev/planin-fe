@@ -28,10 +28,10 @@ import { OverviewTab } from "./components/overview-tab";
 import { StatisticsTab } from "./components/statistics-tab";
 import { DetailsTab } from "./components/details-tab";
 
-const formatCurrency = (value: number, currency: string = "IDR") => {
+const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("id-ID", {
         style: "currency",
-        currency: currency,
+        currency: "IDR",
         minimumFractionDigits: 0,
     }).format(value);
 };

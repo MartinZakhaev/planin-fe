@@ -13,7 +13,7 @@ import {
     User,
     MapPin,
     Percent,
-    DollarSign,
+    Banknote,
     FolderOpen,
     ListTodo,
     Package,
@@ -152,7 +152,7 @@ export function OverviewTab({ project, formatCurrency }: OverviewTabProps) {
             <Card className="shadow-sm border-slate-200 dark:border-slate-800">
                 <CardHeader className="border-b border-slate-100 dark:border-slate-800/50 pb-4">
                     <CardTitle className="flex items-center gap-2 text-base font-semibold">
-                        <DollarSign className="size-4 text-slate-500" />
+                        <Banknote className="size-4 text-slate-500" />
                         RAB Summary
                     </CardTitle>
                 </CardHeader>

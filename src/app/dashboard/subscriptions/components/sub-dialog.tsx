@@ -110,7 +110,11 @@ export function SubDialog({ open, onOpenChange, subscription, onSubmit }: SubDia
                             <SelectContent>
                                 {plans?.map((plan) => (
                                     <SelectItem key={plan.id} value={plan.id}>
-                                        {plan.name} - {new Intl.NumberFormat('id-ID', { style: 'currency', currency: plan.currency || 'IDR' }).format(plan.priceCents)}
+                                        {plan.name} - {new Intl.NumberFormat('id-ID', {
+                                            style: 'currency',
+                                            currency: 'IDR',
+                                            maximumFractionDigits: 0,
+                                        }).format(plan.priceCents / 100)}
                                     </SelectItem>
                                 ))}
                             </SelectContent>

@@ -261,7 +261,6 @@ export function ProjectDialog({ open, onOpenChange, project, onSubmit }: Project
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="IDR">IDR (Indonesian Rupiah)</SelectItem>
-                                                <SelectItem value="USD">USD (US Dollar)</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
