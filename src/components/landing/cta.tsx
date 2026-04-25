@@ -2,10 +2,12 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, CheckCircle2, Shield, Clock } from "lucide-react";
+import Image from "next/image";
 
 const trustPoints = [
     { icon: CheckCircle2, text: "No credit card required" },
     { icon: Shield, text: "Bank-grade security" },
+    { icon: "doku", text: "Secured by Doku" },
     { icon: Clock, text: "Cancel anytime" },
 ];
 
@@ -52,15 +54,16 @@ export function CTA() {
 
                             {/* Trust Indicators */}
                             <div className="flex flex-wrap justify-center gap-6 text-sm opacity-80">
-                                {trustPoints.map((point) => {
-                                    const Icon = point.icon;
-                                    return (
-                                        <div key={point.text} className="flex items-center gap-2">
-                                            <Icon className="size-4" />
-                                            <span>{point.text}</span>
-                                        </div>
-                                    );
-                                })}
+                                {trustPoints.map((point) => (
+                                    <div key={point.text} className="flex items-center gap-2">
+                                        {point.icon === "doku" ? (
+                                            <Image src="/doku_logo.svg" alt="Doku" width={18} height={18} className="brightness-0 invert" />
+                                        ) : (
+                                            <point.icon className="size-4" />
+                                        )}
+                                        <span>{point.text}</span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </CardContent>

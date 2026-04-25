@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check, X } from "lucide-react";
+import { Check, X, ShieldCheck } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 const plans = [
@@ -143,14 +144,22 @@ export function Pricing() {
                     ))}
                 </div>
 
-                {/* Money Back Guarantee */}
-                <p className="text-center text-sm text-muted-foreground mt-10">
-                    All plans include a{" "}
-                    <span className="font-medium text-foreground">
-                        30-day money-back guarantee
-                    </span>
-                    . No questions asked.
-                </p>
+                {/* Money Back Guarantee + Security Badge */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-10">
+                    <p className="text-sm text-muted-foreground">
+                        All plans include a{" "}
+                        <span className="font-medium text-foreground">
+                            30-day money-back guarantee
+                        </span>
+                        . No questions asked.
+                    </p>
+                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/40">
+                        <Image src="/doku_logo.svg" alt="Doku" width={20} height={20} className="shrink-0" />
+                        <span className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                            Secured by Doku Payment Gateway
+                        </span>
+                    </div>
+                </div>
             </div>
         </section>
     );
