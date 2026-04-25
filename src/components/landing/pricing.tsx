@@ -81,10 +81,10 @@ const formatRupiah = (priceCents: number) =>
 
 export function Pricing() {
     return (
-        <section id="pricing" className="py-20 md:py-28 bg-muted/40">
+        <section id="pricing" className="scroll-mt-24 py-24 md:py-32 bg-muted/40">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className="text-center max-w-2xl mx-auto mb-12">
+                <div className="text-center max-w-2xl mx-auto mb-14">
                     <Badge variant="secondary" className="mb-3 text-xs">
                         Pricing
                     </Badge>
@@ -97,14 +97,14 @@ export function Pricing() {
                 </div>
 
                 {/* Pricing Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 2xl:grid-cols-4 max-w-7xl mx-auto">
                     {plans.map((plan) => (
                         <Card
                             key={plan.name}
-                            className={`relative flex flex-col ${
+                            className={`relative flex min-h-[34rem] flex-col rounded-lg ${
                                 plan.featured
-                                    ? "border-primary shadow-lg shadow-primary/10"
-                                    : ""
+                                    ? "border-primary shadow-xl shadow-primary/10"
+                                    : "border-border/80 shadow-sm"
                             }`}
                         >
                             {plan.featured && (
@@ -113,22 +113,26 @@ export function Pricing() {
                                 </div>
                             )}
 
-                            <CardHeader>
+                            <CardHeader className="space-y-4 pb-4">
                                 <CardTitle className="text-xl">{plan.name}</CardTitle>
-                                <CardDescription className="text-sm mt-1">
+                                <CardDescription className="min-h-11 text-sm leading-relaxed">
                                     {plan.description}
                                 </CardDescription>
-                                <div className="flex items-end gap-1.5 pt-4">
-                                    <span className="text-4xl font-bold">{formatRupiah(plan.priceCents)}</span>
-                                    {plan.period && (
-                                        <span className="text-muted-foreground mb-1.5">
-                                            {plan.period}
+                                <div className="pt-2">
+                                    <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                                        <span className="text-[2rem] font-bold leading-none tracking-tight md:text-4xl 2xl:text-[2.05rem]">
+                                            {formatRupiah(plan.priceCents)}
                                         </span>
-                                    )}
+                                        {plan.period && (
+                                            <span className="text-sm font-medium text-muted-foreground">
+                                                per month
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="mt-3 text-xs font-medium text-muted-foreground">
+                                        {plan.maxProjects}
+                                    </p>
                                 </div>
-                                <p className="text-xs font-medium text-muted-foreground">
-                                    {plan.maxProjects}
-                                </p>
                             </CardHeader>
 
                             <CardContent className="flex-1">
@@ -162,7 +166,7 @@ export function Pricing() {
                             <CardFooter className="pt-4">
                                 <Link href="/signup" className="w-full">
                                     <Button
-                                        className="w-full"
+                                        className="w-full whitespace-normal"
                                         variant={plan.featured ? "default" : "outline"}
                                     >
                                         {plan.cta}
@@ -174,7 +178,7 @@ export function Pricing() {
                 </div>
 
                 {/* Money Back Guarantee + Security Badge */}
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-10">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-5 mt-12 text-center sm:text-left">
                     <p className="text-sm text-muted-foreground">
                         All plans include a{" "}
                         <span className="font-medium text-foreground">
