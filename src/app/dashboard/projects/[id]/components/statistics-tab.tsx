@@ -27,7 +27,7 @@ interface ItemBreakdown {
 
 export function StatisticsTab({ project, formatCurrency }: StatisticsTabProps) {
     // Calculate breakdown by item type
-    const calculateItemBreakdown = (): ItemBreakdown & { barColor: string }[] => {
+    const calculateItemBreakdown = (): (ItemBreakdown & { barColor: string })[] => {
         const breakdown = {
             MATERIAL: { total: 0, count: 0 },
             MANPOWER: { total: 0, count: 0 },
