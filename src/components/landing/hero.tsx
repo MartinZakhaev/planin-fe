@@ -21,14 +21,14 @@ const socialProofAvatars = [
 
 const heroVideos = [
     {
-        src: "/Video_Konstruksi_Rumah_Keluarga_Komersial.mp4",
+        src: "https://planin-cdn.terra-dev.web.id/videos/Video_Konstruksi_Rumah_Keluarga_Komersial.mp4",
         label: "Site Progress",
         metric: "Live build",
         mask: "polygon(0 0, 100% 0, 84% 100%, 0 100%)",
         align: "object-[48%_50%]",
     },
     {
-        src: "/Video_Timelapse_Konstruksi_Siap.mp4",
+        src: "https://planin-cdn.terra-dev.web.id/videos/Video_Timelapse_Konstruksi_Siap.mp4",
         label: "Cost Timeline",
         metric: "Planned vs actual",
         mask: "polygon(16% 0, 100% 0, 100% 100%, 0 100%)",
@@ -163,6 +163,7 @@ export function Hero() {
                                                 muted
                                                 loop
                                                 playsInline
+                                                preload="auto"
                                             />
                                             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/10 to-transparent" />
                                             <div className="absolute inset-0 bg-gradient-to-r from-slate-950/25 via-transparent to-slate-950/20" />
