@@ -10,6 +10,7 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 const navLinks = [
     { href: "#features", label: "Solutions" },
@@ -77,6 +78,7 @@ export function Navbar() {
 
                     {/* Auth Buttons */}
                     <div className="flex items-center gap-3">
+                        <LanguageSwitcher compact className="hidden sm:flex" />
                         <Link href="/login" className="hidden sm:inline-flex">
                             <Button variant="ghost" size="sm" className="text-sm font-medium">
                                 Sign In
@@ -152,6 +154,7 @@ export function Navbar() {
 
                                     {/* Mobile Footer */}
                                     <div className="border-t p-6 space-y-3">
+                                        <LanguageSwitcher className="justify-between" />
                                         <Link href="/login" onClick={() => setOpen(false)}>
                                             <Button variant="outline" className="w-full">
                                                 Sign In

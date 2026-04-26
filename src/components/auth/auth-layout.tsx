@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeftIcon } from "lucide-react";
 import { FloatingPaths } from "@/components/floating-paths";
 import Link from "next/link";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 interface AuthLayoutProps {
     children: React.ReactNode;
@@ -54,6 +55,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                         Home
                     </Link>
                 </Button>
+                <LanguageSwitcher className="absolute top-7 right-5" compact />
 
                 {/* Form Container */}
                 <div className="mx-auto space-y-4 sm:w-sm">

@@ -3,8 +3,6 @@
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
 import {
@@ -26,13 +24,13 @@ import {
   CreditCard,
   ClipboardList,
   FileText,
-  Hammer,
   Wrench,
   HardHat,
   Package,
   Shield
 } from "lucide-react"
 import { useIsSuperadmin } from "@/hooks/use-permissions"
+import { LanguageSwitcher } from "@/components/language-switcher"
 
 // Superadmin menu - full access
 const superadminMenuGroups = [
@@ -117,6 +115,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ))}
       </SidebarContent>
       <SidebarFooter>
+        <div className="group-data-[collapsible=icon]:hidden px-2 pb-1">
+          <LanguageSwitcher compact className="w-full justify-between" />
+        </div>
         <NavUser />
       </SidebarFooter>
       <SidebarRail />
