@@ -21,8 +21,8 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                 <div className="z-10 mt-auto">
                     <blockquote className="space-y-2">
                         <p className="text-xl">
-                            &ldquo;Platform ini telah membantu saya menyusun anggaran proyek
-                            konstruksi dengan jauh lebih cepat dan akurat.&rdquo;
+                            &ldquo;This platform has helped me prepare construction project
+                            budgets much faster and more accurately.&rdquo;
                         </p>
                         <footer className="font-mono font-semibold text-sm">
                             ~ Jibril Adam
@@ -51,7 +51,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
                 <Button asChild className="absolute top-7 left-5" variant="ghost">
                     <Link href="/">
                         <ChevronLeftIcon />
-                        Beranda
+                        Home
                     </Link>
                 </Button>
 

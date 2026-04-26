@@ -7,11 +7,11 @@ import { z } from "zod";
 export const loginSchema = z.object({
     email: z
         .string()
-        .min(1, "Email wajib diisi")
-        .email("Email tidak valid"),
+        .min(1, "Email is required")
+        .email("Enter a valid email address"),
     password: z
         .string()
-        .min(1, "Kata sandi wajib diisi"),
+        .min(1, "Password is required"),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;
@@ -23,21 +23,21 @@ export type LoginFormData = z.infer<typeof loginSchema>;
 export const signupSchema = z.object({
     name: z
         .string()
-        .min(1, "Nama lengkap wajib diisi")
-        .min(2, "Nama harus minimal 2 karakter"),
+        .min(1, "Full name is required")
+        .min(2, "Name must be at least 2 characters"),
     email: z
         .string()
-        .min(1, "Email wajib diisi")
-        .email("Email tidak valid"),
+        .min(1, "Email is required")
+        .email("Enter a valid email address"),
     password: z
         .string()
-        .min(1, "Kata sandi wajib diisi")
-        .min(8, "Kata sandi harus minimal 8 karakter"),
+        .min(1, "Password is required")
+        .min(8, "Password must be at least 8 characters"),
     confirmPassword: z
         .string()
-        .min(1, "Konfirmasi kata sandi wajib diisi"),
+        .min(1, "Password confirmation is required"),
 }).refine((data) => data.password === data.confirmPassword, {
-    message: "Kata sandi tidak cocok",
+    message: "Passwords do not match",
     path: ["confirmPassword"],
 });
 

@@ -40,11 +40,11 @@ export function LoginForm() {
 
         try {
             await signIn({ email: data.email, password: data.password });
-            toast.success("Login berhasil!");
+            toast.success("Logged in successfully!");
             router.push("/dashboard");
         } catch (error) {
             toast.error(
-                error instanceof Error ? error.message : "Login gagal. Silakan coba lagi."
+                error instanceof Error ? error.message : "Login failed. Please try again."
             );
         } finally {
             setIsLoading(false);
@@ -56,10 +56,10 @@ export function LoginForm() {
             {/* Header */}
             <div className="flex flex-col space-y-1">
                 <h1 className="font-bold text-2xl tracking-wide">
-                    Masuk ke Akun Anda
+                    Log in to your account
                 </h1>
                 <p className="text-base text-muted-foreground">
-                    Masukkan kredensial Anda untuk melanjutkan.
+                    Enter your credentials to continue.
                 </p>
             </div>
 
@@ -67,27 +67,27 @@ export function LoginForm() {
             <div className="space-y-2">
                 <Button className="w-full" size="lg" type="button">
                     <GoogleIcon />
-                    Lanjutkan dengan Google
+                    Continue with Google
                 </Button>
             </div>
 
             {/* Divider */}
             <div className="flex w-full items-center justify-center">
                 <div className="h-px w-full bg-border" />
-                <span className="px-2 text-muted-foreground text-xs">ATAU</span>
+                <span className="px-2 text-muted-foreground text-xs">OR</span>
                 <div className="h-px w-full bg-border" />
             </div>
 
             {/* Email/Password Form */}
             <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
                 <p className="text-start text-muted-foreground text-xs">
-                    Masukkan alamat email dan kata sandi Anda
+                    Enter your email address and password
                 </p>
                 <div className="space-y-2">
                     <div className="space-y-1">
                         <InputGroup>
                             <InputGroupInput
-                                placeholder="email.anda@contoh.com"
+                                placeholder="you@example.com"
                                 type="email"
                                 {...register("email")}
                                 aria-invalid={!!errors.email}
@@ -102,7 +102,7 @@ export function LoginForm() {
                     <div className="space-y-1">
                         <InputGroup>
                             <InputGroupInput
-                                placeholder="Kata Sandi"
+                                placeholder="Password"
                                 type="password"
                                 {...register("password")}
                                 aria-invalid={!!errors.password}
@@ -118,31 +118,31 @@ export function LoginForm() {
 
                 <Button className="w-full" type="submit" disabled={isLoading}>
                     {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
-                    Masuk
+                    Log in
                 </Button>
             </form>
 
             {/* Footer Links */}
             <p className="mt-4 text-muted-foreground text-sm text-center">
-                Belum punya akun?{" "}
+                Don&apos;t have an account?{" "}
                 <Link href="/signup" className="underline underline-offset-4 hover:text-primary">
-                    Daftar sekarang
+                    Sign up now
                 </Link>
             </p>
             <p className="mt-4 text-muted-foreground text-xs text-center">
-                Dengan masuk, Anda menyetujui{" "}
+                By logging in, you agree to our{" "}
                 <a
                     className="underline underline-offset-4 hover:text-primary"
                     href="#"
                 >
-                    Ketentuan Layanan
+                    Terms of Service
                 </a>{" "}
-                dan{" "}
+                and{" "}
                 <a
                     className="underline underline-offset-4 hover:text-primary"
                     href="#"
                 >
-                    Kebijakan Privasi
+                    Privacy Policy
                 </a>
                 .
             </p>

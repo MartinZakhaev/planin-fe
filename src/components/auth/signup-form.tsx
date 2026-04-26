@@ -42,11 +42,11 @@ export function SignupForm() {
 
         try {
             await signUp({ name: data.name, email: data.email, password: data.password });
-            toast.success("Akun berhasil dibuat!");
+            toast.success("Account created successfully!");
             router.push("/dashboard");
         } catch (error) {
             toast.error(
-                error instanceof Error ? error.message : "Pendaftaran gagal. Silakan coba lagi."
+                error instanceof Error ? error.message : "Registration failed. Please try again."
             );
         } finally {
             setIsLoading(false);
@@ -58,10 +58,10 @@ export function SignupForm() {
             {/* Header */}
             <div className="flex flex-col space-y-1">
                 <h1 className="font-bold text-2xl tracking-wide">
-                    Buat Akun Baru
+                    Create a new account
                 </h1>
                 <p className="text-base text-muted-foreground">
-                    Isi formulir di bawah ini untuk membuat akun Anda.
+                    Fill out the form below to create your account.
                 </p>
             </div>
 
@@ -69,27 +69,27 @@ export function SignupForm() {
             <div className="space-y-2">
                 <Button className="w-full" size="lg" type="button">
                     <GoogleIcon />
-                    Daftar dengan Google
+                    Sign up with Google
                 </Button>
             </div>
 
             {/* Divider */}
             <div className="flex w-full items-center justify-center">
                 <div className="h-px w-full bg-border" />
-                <span className="px-2 text-muted-foreground text-xs">ATAU</span>
+                <span className="px-2 text-muted-foreground text-xs">OR</span>
                 <div className="h-px w-full bg-border" />
             </div>
 
             {/* Signup Form */}
             <form className="space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
                 <p className="text-start text-muted-foreground text-xs">
-                    Masukkan detail Anda untuk membuat akun
+                    Enter your details to create an account
                 </p>
                 <div className="space-y-2">
                     <div className="space-y-1">
                         <InputGroup>
                             <InputGroupInput
-                                placeholder="Nama Lengkap"
+                                placeholder="Full name"
                                 type="text"
                                 {...register("name")}
                                 aria-invalid={!!errors.name}
@@ -104,7 +104,7 @@ export function SignupForm() {
                     <div className="space-y-1">
                         <InputGroup>
                             <InputGroupInput
-                                placeholder="email.anda@contoh.com"
+                                placeholder="you@example.com"
                                 type="email"
                                 {...register("email")}
                                 aria-invalid={!!errors.email}
@@ -119,7 +119,7 @@ export function SignupForm() {
                     <div className="space-y-1">
                         <InputGroup>
                             <InputGroupInput
-                                placeholder="Kata Sandi (min. 8 karakter)"
+                                placeholder="Password (min. 8 characters)"
                                 type="password"
                                 {...register("password")}
                                 aria-invalid={!!errors.password}
@@ -134,7 +134,7 @@ export function SignupForm() {
                     <div className="space-y-1">
                         <InputGroup>
                             <InputGroupInput
-                                placeholder="Konfirmasi Kata Sandi"
+                                placeholder="Confirm password"
                                 type="password"
                                 {...register("confirmPassword")}
                                 aria-invalid={!!errors.confirmPassword}
@@ -150,31 +150,31 @@ export function SignupForm() {
 
                 <Button className="w-full" type="submit" disabled={isLoading}>
                     {isLoading && <Loader2 className="mr-2 size-4 animate-spin" />}
-                    Buat Akun
+                    Create account
                 </Button>
             </form>
 
             {/* Footer Links */}
             <p className="mt-4 text-muted-foreground text-sm text-center">
-                Sudah punya akun?{" "}
+                Already have an account?{" "}
                 <Link href="/login" className="underline underline-offset-4 hover:text-primary">
-                    Masuk
+                    Log in
                 </Link>
             </p>
             <p className="mt-4 text-muted-foreground text-xs text-center">
-                Dengan mendaftar, Anda menyetujui{" "}
+                By signing up, you agree to our{" "}
                 <a
                     className="underline underline-offset-4 hover:text-primary"
                     href="#"
                 >
-                    Ketentuan Layanan
+                    Terms of Service
                 </a>{" "}
-                dan{" "}
+                and{" "}
                 <a
                     className="underline underline-offset-4 hover:text-primary"
                     href="#"
                 >
-                    Kebijakan Privasi
+                    Privacy Policy
                 </a>
                 .
             </p>
