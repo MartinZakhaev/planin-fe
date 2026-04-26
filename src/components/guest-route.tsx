@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 
@@ -12,12 +12,19 @@ interface GuestRouteProps {
 export function GuestRoute({ children }: GuestRouteProps) {
     const { user, loading } = useAuth();
     const router = useRouter();
+    const pathname = usePathname();
 
     useEffect(() => {
         if (!loading && user) {
-            router.replace("/dashboard");
+            const target = user.emailVerified
+                ? "/dashboard"
+                : `/verify-otp?email=${encodeURIComponent(user.email)}`;
+
+            if (pathname !== target) {
+                router.replace(target);
+            }
         }
-    }, [user, loading, router]);
+    }, [user, loading, router, pathname]);
 
     if (loading) {
         return (

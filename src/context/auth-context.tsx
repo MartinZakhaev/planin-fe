@@ -2,7 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { fetcher } from "@/lib/api";
-import type { User, AuthResponse, SessionResponse, SignInCredentials, SignUpCredentials } from "@/types/auth";
+import { sendVerificationOtp } from "@/lib/email-verification";
+import type { AuthResponse, SessionResponse, SignInCredentials, SignUpCredentials } from "@/types/auth";
 
 // Extended user type that includes role from better-auth admin plugin response
 interface AuthUser {
@@ -36,6 +37,16 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+export class EmailNotVerifiedError extends Error {
+    email: string;
+
+    constructor(email: string) {
+        super("Please verify your email address before logging in.");
+        this.name = "EmailNotVerifiedError";
+        this.email = email;
+    }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [loading, setLoading] = useState(true);
@@ -67,20 +78,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const signIn = useCallback(async (credentials: SignInCredentials) => {
         await fetcher<AuthResponse>("/api/auth/sign-in/email", {
             method: "POST",
-            body: JSON.stringify(credentials),
+            body: JSON.stringify({
+                email: credentials.email,
+                password: credentials.password,
+            }),
         });
         // Refresh to get full user data with role info
         await refreshSession();
+
+        const session = await fetcher<SessionResponse>("/api/auth/get-session");
+
+        if (!session.user.emailVerified) {
+            await fetcher("/api/auth/sign-out", { method: "POST" }).catch(() => undefined);
+            setUser(null);
+            throw new EmailNotVerifiedError(credentials.email);
+        }
     }, [refreshSession]);
 
     const signUp = useCallback(async (credentials: SignUpCredentials) => {
-        await fetcher<AuthResponse>("/api/auth/sign-up/email", {
-            method: "POST",
-            body: JSON.stringify(credentials),
-        });
-        // Refresh to get full user data with role info
-        await refreshSession();
-    }, [refreshSession]);
+        try {
+            await fetcher<AuthResponse>("/api/auth/sign-up/email", {
+                method: "POST",
+                body: JSON.stringify({
+                    name: credentials.name,
+                    email: credentials.email,
+                    password: credentials.password,
+                }),
+            });
+            await sendVerificationOtp({
+                email: credentials.email,
+                language: credentials.language,
+            });
+        } finally {
+            await fetcher("/api/auth/sign-out", { method: "POST" }).catch(() => undefined);
+            setUser(null);
+        }
+    }, []);
 
     const signOut = useCallback(async () => {
         await fetcher("/api/auth/sign-out", { method: "POST" });

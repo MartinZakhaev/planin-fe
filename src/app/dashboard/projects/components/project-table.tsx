@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Project } from "@/types/project";
 import { DataTable, createSelectColumn } from "@/components/ui/data-table";
@@ -30,7 +30,7 @@ export function ProjectTable({ projects, isLoading, onEdit, onDelete, onSelectio
     const router = useRouter();
     const [deleteProject, setDeleteProject] = useState<Project | null>(null);
 
-    const columns: ColumnDef<Project>[] = [
+    const columns = useMemo<ColumnDef<Project>[]>(() => [
         createSelectColumn<Project>(),
         {
             accessorKey: "name",
@@ -147,7 +147,7 @@ export function ProjectTable({ projects, isLoading, onEdit, onDelete, onSelectio
             },
             enableHiding: false,
         },
-    ];
+    ], [onEdit]);
 
     return (
         <>

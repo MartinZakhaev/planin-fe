@@ -67,23 +67,38 @@ export function TextLocalizer() {
   const { language } = useLanguage();
 
   useEffect(() => {
-    localizeTree(document.body, language);
+    let observer: MutationObserver | null = null;
 
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        mutation.addedNodes.forEach((node) => {
-          if (node.nodeType === Node.TEXT_NODE) {
-            localizeTextNode(node as Text, language);
-          }
+    const applyLocalization = (callback: () => void) => {
+      observer?.disconnect();
+      callback();
+      observer?.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: localizedAttributes,
+      });
+    };
 
-          if (node.nodeType === Node.ELEMENT_NODE) {
-            localizeTree(node as Element, language);
+    applyLocalization(() => localizeTree(document.body, language));
+
+    observer = new MutationObserver((mutations) => {
+      applyLocalization(() => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === Node.TEXT_NODE) {
+              localizeTextNode(node as Text, language);
+            }
+
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              localizeTree(node as Element, language);
+            }
+          });
+
+          if (mutation.type === "attributes" && mutation.target instanceof Element) {
+            localizeElementAttributes(mutation.target, language);
           }
         });
-
-        if (mutation.type === "attributes" && mutation.target instanceof Element) {
-          localizeElementAttributes(mutation.target, language);
-        }
       });
     });
 
@@ -99,4 +114,3 @@ export function TextLocalizer() {
 
   return null;
 }
-

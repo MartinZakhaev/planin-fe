@@ -1,4 +1,4 @@
-import { BASE_URL } from './api';
+import { ApiError, BASE_URL } from './api';
 
 export async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const res = await fetch(`${BASE_URL}${endpoint}`, {
@@ -12,7 +12,12 @@ export async function apiFetch<T>(endpoint: string, options?: RequestInit): Prom
 
     if (!res.ok) {
         const errorBody = await res.json().catch(() => ({}));
-        throw new Error(errorBody.message || 'API Error');
+        throw new ApiError(
+            errorBody.message || 'API Error',
+            res.status,
+            errorBody.code,
+            errorBody.retryAfterSeconds
+        );
     }
 
     // Handle 204

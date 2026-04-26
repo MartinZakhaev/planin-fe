@@ -17,11 +17,14 @@ import { GoogleIcon } from "./social-icons";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginFormData } from "@/lib/validations/auth";
+import { EmailNotVerifiedError } from "@/context/auth-context";
+import { useLanguage } from "@/context/language-context";
 
 export function LoginForm() {
     const [isLoading, setIsLoading] = useState(false);
     const { signIn } = useAuth();
     const router = useRouter();
+    const { language } = useLanguage();
 
     const {
         register,
@@ -39,10 +42,16 @@ export function LoginForm() {
         setIsLoading(true);
 
         try {
-            await signIn({ email: data.email, password: data.password });
+            await signIn({ email: data.email, password: data.password, language });
             toast.success("Logged in successfully!");
             router.push("/dashboard");
         } catch (error) {
+            if (error instanceof EmailNotVerifiedError) {
+                toast.info("Your email is not verified yet. Please use the code we already sent.");
+                router.push(`/verify-otp?email=${encodeURIComponent(error.email)}`);
+                return;
+            }
+
             toast.error(
                 error instanceof Error ? error.message : "Login failed. Please try again."
             );

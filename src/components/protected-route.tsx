@@ -45,6 +45,11 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
         // Check if user is non-admin accessing superadmin-only routes
         if (!loading && user) {
+            if (!user.emailVerified) {
+                router.replace(`/verify-otp?email=${encodeURIComponent(user.email)}`);
+                return;
+            }
+
             const isAdmin = isAdminUser(user.role);
             const isSuperadminRoute = SUPERADMIN_ROUTES.some(
                 (route) => pathname === route || pathname.startsWith(route + "/")
@@ -66,6 +71,10 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
     }
 
     if (!user) {
+        return null;
+    }
+
+    if (!user.emailVerified) {
         return null;
     }
 

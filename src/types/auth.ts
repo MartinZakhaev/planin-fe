@@ -27,10 +27,12 @@ export interface SessionResponse {
 export interface SignInCredentials {
     email: string;
     password: string;
+    language?: "en" | "id";
 }
 
 export interface SignUpCredentials {
     name: string;
     email: string;
     password: string;
+    language?: "en" | "id";
 }

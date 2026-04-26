@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Project, CreateProjectDto, UpdateProjectDto } from "@/types/project";
 import { useProjects } from "@/hooks/use-projects";
 import { Button } from "@/components/ui/button";
@@ -36,18 +36,23 @@ export default function ProjectsPage() {
     const [showBulkDelete, setShowBulkDelete] = useState(false);
     const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
-    const handleCreate = async (data: any) => {
+    const handleCreate = useCallback(async (data: CreateProjectDto | UpdateProjectDto) => {
+        if (!("organizationId" in data) || !data.organizationId) {
+            toast.error("Please select an organization");
+            return;
+        }
+
         try {
             await createProject(data);
             toast.success("Project created successfully");
             setIsDialogOpen(false);
             refreshProjects();
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Failed to create project");
         }
-    };
+    }, [createProject, refreshProjects]);
 
-    const handleUpdate = async (data: any) => {
+    const handleUpdate = useCallback(async (data: CreateProjectDto | UpdateProjectDto) => {
         if (!selectedProject) return;
         try {
             await updateProject(selectedProject.id, data);
@@ -55,12 +60,12 @@ export default function ProjectsPage() {
             setIsDialogOpen(false);
             setSelectedProject(null);
             refreshProjects();
-        } catch (error: any) {
-            toast.error(error.message);
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Failed to update project");
         }
-    };
+    }, [refreshProjects, selectedProject, updateProject]);
 
-    const handleBulkDelete = async () => {
+    const handleBulkDelete = useCallback(async () => {
         setIsBulkDeleting(true);
         try {
             for (const project of selectedProjects) {
@@ -70,17 +75,36 @@ export default function ProjectsPage() {
             setSelectedProjects([]);
             setShowBulkDelete(false);
             refreshProjects();
-        } catch (error: any) {
+        } catch {
             toast.error("Failed to delete some projects");
         } finally {
             setIsBulkDeleting(false);
         }
-    };
+    }, [deleteProject, refreshProjects, selectedProjects]);
+
+    const handleOpenCreate = useCallback(() => {
+        setSelectedProject(null);
+        setIsDialogOpen(true);
+    }, []);
+
+    const handleEdit = useCallback((project: Project) => {
+        setSelectedProject(project);
+        setIsDialogOpen(true);
+    }, []);
+
+    const handleDelete = useCallback((id: string) => {
+        deleteProject(id).then(() => {
+            toast.success("Project deleted successfully");
+            refreshProjects();
+        }).catch((error) => {
+            toast.error(error instanceof Error ? error.message : "Failed to delete project");
+        });
+    }, [deleteProject, refreshProjects]);
 
     // Calculate this month's projects
-    const thisMonthProjects = projects.filter(
+    const thisMonthProjects = useMemo(() => projects.filter(
         p => new Date(p.createdAt) > new Date(new Date().setDate(1))
-    ).length;
+    ).length, [projects]);
 
     return (
         <SidebarInset>
@@ -153,7 +177,7 @@ export default function ProjectsPage() {
                                     Delete ({selectedProjects.length})
                                 </Button>
                             )}
-                            <Button onClick={() => { setSelectedProject(null); setIsDialogOpen(true); }}>
+                            <Button onClick={handleOpenCreate}>
                                 <Plus className="mr-2 h-4 w-4" /> Add Project
                             </Button>
                         </div>
@@ -162,16 +186,8 @@ export default function ProjectsPage() {
                         <ProjectTable
                             projects={projects}
                             isLoading={isLoading}
-                            onEdit={(project) => {
-                                setSelectedProject(project);
-                                setIsDialogOpen(true);
-                            }}
-                            onDelete={(id) => {
-                                deleteProject(id).then(() => {
-                                    toast.success("Project deleted successfully");
-                                    refreshProjects();
-                                }).catch((err) => toast.error(err.message));
-                            }}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
                             onSelectionChange={setSelectedProjects}
                         />
                     </CardContent>

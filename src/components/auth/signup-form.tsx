@@ -17,11 +17,15 @@ import { GoogleIcon } from "./social-icons";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signupSchema, type SignupFormData } from "@/lib/validations/auth";
+import { ApiError } from "@/lib/api";
+import { sendVerificationOtp } from "@/lib/email-verification";
+import { useLanguage } from "@/context/language-context";
 
 export function SignupForm() {
     const [isLoading, setIsLoading] = useState(false);
     const { signUp } = useAuth();
     const router = useRouter();
+    const { language } = useLanguage();
 
     const {
         register,
@@ -41,12 +45,37 @@ export function SignupForm() {
         setIsLoading(true);
 
         try {
-            await signUp({ name: data.name, email: data.email, password: data.password });
-            toast.success("Account created successfully!");
-            router.push("/dashboard");
+            await signUp({ name: data.name, email: data.email, password: data.password, language });
+            toast.success("Account created. We sent a verification code to your email.");
+            router.push(`/verify-otp?email=${encodeURIComponent(data.email)}`);
         } catch (error) {
+            const message = error instanceof Error ? error.message : "";
+            const isExistingAccount = /already|exist|duplicate/i.test(message);
+
+            if (isExistingAccount) {
+                try {
+                    const response = await sendVerificationOtp({ email: data.email, language });
+
+                    if (response.status === "already_verified") {
+                        toast.info("An account with this email already exists. Please log in.");
+                        router.push("/login");
+                        return;
+                    }
+
+                    toast.success("We sent a new verification code to your email.");
+                    router.push(`/verify-otp?email=${encodeURIComponent(data.email)}`);
+                    return;
+                } catch (resendError) {
+                    if (resendError instanceof ApiError && resendError.status === 429) {
+                        toast.info("A verification code was already sent. Please check your email.");
+                        router.push(`/verify-otp?email=${encodeURIComponent(data.email)}`);
+                        return;
+                    }
+                }
+            }
+
             toast.error(
-                error instanceof Error ? error.message : "Registration failed. Please try again."
+                message || "Registration failed. Please try again."
             );
         } finally {
             setIsLoading(false);

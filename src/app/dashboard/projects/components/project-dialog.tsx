@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Project, CreateProjectDto, UpdateProjectDto } from "@/types/project";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,8 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useEffect, useState } from "react";
-import { Loader2, Building2, Hash, MapPin, Percent, Coins, FileText, ArrowRight, Plus, AlertCircle } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Loader2, Building2, ArrowRight, Plus, AlertCircle } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useOrganizations } from "@/hooks/use-organizations";
 import {
@@ -26,7 +26,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { cn } from "@/lib/utils";
 import { CreateOrgSheet } from "./create-org-sheet";
 
 interface ProjectDialogProps {
@@ -36,52 +35,95 @@ interface ProjectDialogProps {
     onSubmit: (data: CreateProjectDto | UpdateProjectDto) => Promise<void>;
 }
 
+type ProjectFormValues = {
+    organizationId?: string;
+    ownerUserId?: string;
+    name?: string;
+    code?: string;
+    description?: string;
+    location?: string;
+    taxRatePercent?: number | string;
+    currency?: string;
+};
+
 export function ProjectDialog({ open, onOpenChange, project, onSubmit }: ProjectDialogProps) {
-    const { register, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting } } = useForm<CreateProjectDto & UpdateProjectDto>();
+    const { control, register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<ProjectFormValues>({
+        defaultValues: {
+            name: "",
+            code: "",
+            description: "",
+            location: "",
+            taxRatePercent: 11,
+            currency: "IDR",
+            organizationId: "",
+        },
+    });
     const { user } = useAuth();
     const { organizations, isLoading: orgsLoading, refreshOrganizations } = useOrganizations();
     const [createOrgOpen, setCreateOrgOpen] = useState(false);
+    const defaultOrganizationId = useMemo(() => organizations[0]?.id || "", [organizations]);
 
-    const handleOrgCreated = (newOrgId: string) => {
+    const handleOrgCreated = useCallback((newOrgId: string) => {
         refreshOrganizations();
         setValue("organizationId", newOrgId);
         setCreateOrgOpen(false);
-    };
+    }, [refreshOrganizations, setValue]);
 
-    const selectedOrgId = watch("organizationId");
-    const selectedCurrency = watch("currency") || "IDR";
+    const selectedOrgId = useWatch({ control, name: "organizationId" }) || "";
+    const selectedCurrency = useWatch({ control, name: "currency" }) || "IDR";
 
     useEffect(() => {
-        if (open) {
-            if (project) {
-                setValue("name", project.name);
-                setValue("code", project.code || "");
-                setValue("description", project.description || "");
-                setValue("location", project.location || "");
-                setValue("taxRatePercent", project.taxRatePercent);
-                setValue("currency", project.currency);
-                setValue("organizationId", project.organizationId);
-            } else {
-                reset({
-                    name: "",
-                    code: "",
-                    description: "",
-                    location: "",
-                    taxRatePercent: 11,
-                    currency: "IDR",
-                    organizationId: organizations[0]?.id || "",
-                });
-            }
+        if (!open) {
+            return;
         }
-    }, [open, project, reset, setValue, organizations]);
 
-    const onFormSubmit = async (data: any) => {
-        if (!data.organizationId) return;
-        if (!project && user) {
-            data.ownerUserId = user.id;
+        if (project) {
+            reset({
+                name: project.name,
+                code: project.code || "",
+                description: project.description || "",
+                location: project.location || "",
+                taxRatePercent: project.taxRatePercent,
+                currency: project.currency,
+                organizationId: project.organizationId,
+            });
+            return;
         }
-        data.taxRatePercent = Number(data.taxRatePercent);
-        await onSubmit(data);
+
+        reset({
+            name: "",
+            code: "",
+            description: "",
+            location: "",
+            taxRatePercent: 11,
+            currency: "IDR",
+            organizationId: defaultOrganizationId,
+        });
+    }, [open, project, reset, defaultOrganizationId]);
+
+    const onFormSubmit = async (data: ProjectFormValues) => {
+        if (!data.organizationId) return;
+
+        const taxRatePercent = Number(data.taxRatePercent);
+        const normalizedProject = {
+            name: data.name ?? "",
+            code: data.code || undefined,
+            description: data.description || undefined,
+            location: data.location || undefined,
+            taxRatePercent: Number.isFinite(taxRatePercent) ? taxRatePercent : undefined,
+            currency: data.currency || "IDR",
+        };
+
+        if (project) {
+            await onSubmit(normalizedProject);
+            return;
+        }
+
+        await onSubmit({
+            ...normalizedProject,
+            organizationId: data.organizationId,
+            ownerUserId: user?.id,
+        });
     };
 
     return (
