@@ -18,6 +18,32 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## End-to-End Testing
+
+This project uses [Playwright](https://playwright.dev/) for browser-based end-to-end tests.
+
+Install the browser binaries once:
+
+```bash
+npm run playwright:install
+```
+
+Run the test suite:
+
+```bash
+npm run test:e2e
+```
+
+Useful variants:
+
+```bash
+npm run test:e2e:ui
+npm run test:e2e:headed
+npm run test:e2e:report
+```
+
+By default, Playwright starts the Next.js dev server on port `3100`. Use `PLAYWRIGHT_PORT=3101 npm run test:e2e` to choose another port, or `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3000 npm run test:e2e` to test an already-running server.
+
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More
