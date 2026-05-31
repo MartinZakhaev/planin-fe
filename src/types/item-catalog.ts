@@ -2,6 +2,7 @@ export interface ItemCatalog {
     id: string;
     name: string;
     code: string;
+    ownerUserId?: string | null;
     type: 'MATERIAL' | 'MANPOWER' | 'TOOL';
     unitId: string;
     defaultPrice: number;
@@ -22,6 +23,15 @@ export interface CreateItemCatalogDto {
     type: 'MATERIAL' | 'MANPOWER' | 'TOOL';
     unitId: string;
     defaultPrice: number;
+    description?: string;
+}
+
+export interface CreatePersonalItemCatalogDto {
+    name: string;
+    type: 'MATERIAL' | 'MANPOWER' | 'TOOL';
+    unitId: string;
+    defaultPrice: number;
+    prefix?: string;
     description?: string;
 }
 

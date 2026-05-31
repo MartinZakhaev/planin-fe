@@ -2,6 +2,7 @@ export interface TaskCatalog {
     id: string;
     name: string;
     code: string;
+    ownerUserId?: string | null;
     description?: string;
     divisionId: string;
     division?: {
@@ -18,6 +19,13 @@ export interface CreateTaskCatalogDto {
     code: string;
     description?: string;
     divisionId: string;
+}
+
+export interface CreatePersonalTaskCatalogDto {
+    name: string;
+    divisionId: string;
+    prefix?: string;
+    description?: string;
 }
 
 export interface UpdateTaskCatalogDto {

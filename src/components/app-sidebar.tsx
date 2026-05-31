@@ -43,6 +43,7 @@ const superadminMenuGroups = [
       { title: "Plans", url: "/dashboard/plans", icon: FileText },
       { title: "Subscriptions", url: "/dashboard/subscriptions", icon: CreditCard },
       { title: "Audit Logs", url: "/dashboard/audit-logs", icon: ClipboardList },
+      { title: "User Custom Values", url: "/dashboard/user-custom-values", icon: Users },
     ]
   },
   {

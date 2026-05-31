@@ -17,6 +17,7 @@ export interface CreateProjectTaskDto {
     projectDivisionId: string;
     taskCatalogId?: string;
     displayName: string;
+    personalCatalogPrefix?: string;
     sortOrder?: number;
     notes?: string;
 }

@@ -17,6 +17,7 @@ const SUPERADMIN_ROUTES = [
     "/dashboard/plans",
     "/dashboard/subscriptions",
     "/dashboard/audit-logs",
+    "/dashboard/user-custom-values",
     "/dashboard/units",
     "/dashboard/work-divisions",
     "/dashboard/task-catalogs",
