@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -63,6 +63,39 @@ const getItemTypeBadgeColor = (type: string) => {
     }
 };
 
+const getQuantityCopy = (type?: string) => {
+    switch (type) {
+        case "MANPOWER":
+            return {
+                label: "Qty Orang *",
+                placeholder: "3",
+                helper: "Jumlah orang yang bekerja per hari.",
+                noun: "orang",
+            };
+        case "TOOL":
+            return {
+                label: "Qty Tools *",
+                placeholder: "2",
+                helper: "Jumlah alat yang digunakan per hari.",
+                noun: "tools",
+            };
+        case "MATERIAL":
+            return {
+                label: "Qty Materials *",
+                placeholder: "10",
+                helper: "Jumlah material yang dipakai.",
+                noun: "material",
+            };
+        default:
+            return {
+                label: "Quantity *",
+                placeholder: "1",
+                helper: "Pilih item catalog untuk melihat konteks quantity.",
+                noun: "item",
+            };
+    }
+};
+
 export function AddLineItemDialog({
     open,
     onOpenChange,
@@ -74,15 +107,18 @@ export function AddLineItemDialog({
     const [itemCatalogs, setItemCatalogs] = useState<ItemCatalog[]>([]);
     const [units, setUnits] = useState<Unit[]>([]);
     const [isLoading, setIsLoading] = useState(false);
-    const { register, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting } } = useForm<CreateTaskLineItemDto>();
+    const { control, register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm<CreateTaskLineItemDto>();
 
-    const selectedItemId = watch("itemCatalogId");
-    const quantity = watch("quantity") || 0;
-    const unitPrice = watch("unitPrice") || 0;
-    const lineTotal = quantity * unitPrice;
+    const [selectedItemId, unitId, quantity = 0, durationDays = 1, unitPrice = 0] = useWatch({
+        control,
+        name: ["itemCatalogId", "unitId", "quantity", "durationDays", "unitPrice"],
+    });
+    const lineTotal = quantity * durationDays * unitPrice;
 
     useEffect(() => {
         if (open) {
+            // Loading state mirrors the dialog's fetch lifecycle.
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setIsLoading(true);
             Promise.all([
                 apiFetch<ItemCatalog[]>("/item-catalogs"),
@@ -102,6 +138,7 @@ export function AddLineItemDialog({
                 unitId: "",
                 description: "",
                 quantity: 1,
+                durationDays: 1,
                 unitPrice: 0,
             });
         }
@@ -135,12 +172,14 @@ export function AddLineItemDialog({
             });
             onOpenChange(false);
             onSuccess();
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Failed to add line item:", error);
         }
     };
 
     const selectedItem = itemCatalogs.find(i => i.id === selectedItemId);
+    const quantityCopy = getQuantityCopy(selectedItem?.type);
+    const dailyTotal = quantity * unitPrice;
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -148,7 +187,7 @@ export function AddLineItemDialog({
                 <DialogHeader>
                     <DialogTitle>Add Item</DialogTitle>
                     <DialogDescription>
-                        Add an item to task "{taskName}".
+                        Add an item to task &quot;{taskName}&quot;.
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit(onFormSubmit)} className="grid gap-4 py-4">
@@ -197,6 +236,8 @@ export function AddLineItemDialog({
                             </div>
                             <p className="text-muted-foreground text-xs">
                                 Default price: {formatCurrency(selectedItem.defaultPrice)}
+                                {selectedItem.type === "MANPOWER" && " per orang per hari"}
+                                {selectedItem.type === "TOOL" && " per tool per hari"}
                             </p>
                         </div>
                     )}
@@ -212,20 +253,21 @@ export function AddLineItemDialog({
 
                     <div className="grid grid-cols-2 gap-4">
                         <div className="grid gap-2">
-                            <Label htmlFor="quantity">Quantity *</Label>
+                            <Label htmlFor="quantity">{quantityCopy.label}</Label>
                             <Input
                                 id="quantity"
                                 type="number"
                                 step="0.01"
                                 {...register("quantity", { required: true, valueAsNumber: true, min: 0.01 })}
-                                placeholder="1"
+                                placeholder={quantityCopy.placeholder}
                             />
+                            <span className="text-xs text-muted-foreground">{quantityCopy.helper}</span>
                             {errors.quantity && <span className="text-destructive text-xs">Required (min 0.01)</span>}
                         </div>
                         <div className="grid gap-2">
-                            <Label htmlFor="unitId">Unit *</Label>
+                            <Label htmlFor="unitId">Unit Harga *</Label>
                             <Select
-                                value={watch("unitId") || ""}
+                                value={unitId || ""}
                                 onValueChange={(value) => setValue("unitId", value)}
                             >
                                 <SelectTrigger>
@@ -244,6 +286,21 @@ export function AddLineItemDialog({
                     </div>
 
                     <div className="grid gap-2">
+                        <Label htmlFor="durationDays">Jumlah Hari *</Label>
+                        <Input
+                            id="durationDays"
+                            type="number"
+                            step="0.5"
+                            {...register("durationDays", { required: true, valueAsNumber: true, min: 0 })}
+                            placeholder="14"
+                        />
+                        <span className="text-xs text-muted-foreground">
+                            Total akan dikalikan dengan durasi hari. Isi 1 untuk material yang tidak bergantung durasi.
+                        </span>
+                        {errors.durationDays && <span className="text-destructive text-xs">Required</span>}
+                    </div>
+
+                    <div className="grid gap-2">
                         <Label htmlFor="unitPrice">Unit Price (IDR) *</Label>
                         <Input
                             id="unitPrice"
@@ -259,6 +316,10 @@ export function AddLineItemDialog({
                     <div className="rounded-lg bg-primary/10 p-4">
                         <p className="text-sm text-muted-foreground">Line Total</p>
                         <p className="text-xl font-bold text-primary">{formatCurrency(lineTotal)}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                            {quantity || 0} {quantityCopy.noun} x {formatCurrency(unitPrice)} = {formatCurrency(dailyTotal)} per hari
+                            {" "}x {durationDays || 0} hari
+                        </p>
                     </div>
 
                     <DialogFooter>

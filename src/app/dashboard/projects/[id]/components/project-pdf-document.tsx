@@ -202,12 +202,13 @@ const styles = StyleSheet.create({
         color: "#9ca3af",
     },
     colNo: { width: "5%" },
-    colItem: { width: "30%" },
+    colItem: { width: "26%" },
     colType: { width: "12%" },
     colQty: { width: "10%", textAlign: "right" },
+    colDays: { width: "8%", textAlign: "right" },
     colUnit: { width: "8%" },
-    colPrice: { width: "17%", textAlign: "right" },
-    colTotal: { width: "18%", textAlign: "right" },
+    colPrice: { width: "16%", textAlign: "right" },
+    colTotal: { width: "15%", textAlign: "right" },
 });
 
 interface ProjectPdfDocumentProps {
@@ -382,6 +383,7 @@ export function ProjectPdfDocument({ project, formatCurrency }: ProjectPdfDocume
                                         <Text style={[styles.tableHeaderCell, styles.colItem]}>Item</Text>
                                         <Text style={[styles.tableHeaderCell, styles.colType]}>Tipe</Text>
                                         <Text style={[styles.tableHeaderCell, styles.colQty]}>Qty</Text>
+                                        <Text style={[styles.tableHeaderCell, styles.colDays]}>Hari</Text>
                                         <Text style={[styles.tableHeaderCell, styles.colUnit]}>Satuan</Text>
                                         <Text style={[styles.tableHeaderCell, styles.colPrice]}>Harga Satuan</Text>
                                         <Text style={[styles.tableHeaderCell, styles.colTotal]}>Total</Text>
@@ -398,6 +400,7 @@ export function ProjectPdfDocument({ project, formatCurrency }: ProjectPdfDocume
                                                 {item.itemCatalog?.type || "-"}
                                             </Text>
                                             <Text style={[styles.tableCell, styles.colQty]}>{item.quantity}</Text>
+                                            <Text style={[styles.tableCell, styles.colDays]}>{Number(item.durationDays ?? 1)}</Text>
                                             <Text style={[styles.tableCell, styles.colUnit]}>{item.unit?.code || "-"}</Text>
                                             <Text style={[styles.tableCell, styles.colPrice]}>
                                                 {formatCurrency(Number(item.unitPrice), project.currency)}

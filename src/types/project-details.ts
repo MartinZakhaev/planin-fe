@@ -37,6 +37,7 @@ export interface TaskLineItem {
     itemCatalogId: string | null;
     description: string | null;
     quantity: number;
+    durationDays: number;
     unitPrice: number;
     lineTotal: number;
     itemCatalog: {

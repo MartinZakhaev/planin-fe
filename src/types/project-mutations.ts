@@ -34,6 +34,7 @@ export interface CreateTaskLineItemDto {
     unitId: string;
     description?: string;
     quantity: number;
+    durationDays?: number;
     unitPrice: number;
     taxable?: boolean;
 }
@@ -41,6 +42,7 @@ export interface CreateTaskLineItemDto {
 export interface UpdateTaskLineItemDto {
     description?: string;
     quantity?: number;
+    durationDays?: number;
     unitPrice?: number;
     taxable?: boolean;
 }

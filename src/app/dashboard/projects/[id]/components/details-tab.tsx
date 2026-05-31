@@ -55,7 +55,6 @@ import { AddTaskDialog } from "./add-task-dialog";
 import { AddLineItemDialog } from "./add-line-item-dialog";
 import { apiFetch } from "@/lib/api-fetch";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 
 interface DetailsTabProps {
     project: ProjectDetails;
@@ -88,6 +87,19 @@ const getItemTypeBadgeColor = (type: string) => {
             return "bg-orange-100 text-orange-800";
         default:
             return "";
+    }
+};
+
+const getQuantityLabel = (type?: string) => {
+    switch (type) {
+        case "MANPOWER":
+            return "orang";
+        case "TOOL":
+            return "tools";
+        case "MATERIAL":
+            return "material";
+        default:
+            return "qty";
     }
 };
 
@@ -158,7 +170,7 @@ export function DetailsTab({ project, formatCurrency, onRefresh }: DetailsTabPro
             await apiFetch(`/project-divisions/${divisionId}`, { method: "DELETE" });
             toast.success("Division deleted successfully");
             onRefresh();
-        } catch (error: any) {
+        } catch {
             toast.error("Failed to delete division");
         }
     };
@@ -169,7 +181,7 @@ export function DetailsTab({ project, formatCurrency, onRefresh }: DetailsTabPro
             await apiFetch(`/project-tasks/${taskId}`, { method: "DELETE" });
             toast.success("Task deleted successfully");
             onRefresh();
-        } catch (error: any) {
+        } catch {
             toast.error("Failed to delete task");
         }
     };
@@ -180,7 +192,7 @@ export function DetailsTab({ project, formatCurrency, onRefresh }: DetailsTabPro
             await apiFetch(`/task-line-items/${itemId}`, { method: "DELETE" });
             toast.success("Item deleted successfully");
             onRefresh();
-        } catch (error: any) {
+        } catch {
             toast.error("Failed to delete item");
         }
     };
@@ -188,7 +200,7 @@ export function DetailsTab({ project, formatCurrency, onRefresh }: DetailsTabPro
     const existingDivisionIds = project.divisions.map(d => d.divisionId);
 
     // Render task in compact mode (collapsible row)
-    const renderCompactTask = (task: ProjectTask, divisionId: string) => {
+    const renderCompactTask = (task: ProjectTask) => {
         const isExpanded = expandedTasks.has(task.id);
         const taskTotal = calculateTaskTotal(task);
 
@@ -281,6 +293,7 @@ export function DetailsTab({ project, formatCurrency, onRefresh }: DetailsTabPro
                                                 <TableHead>Item</TableHead>
                                                 <TableHead>Type</TableHead>
                                                 <TableHead className="text-right">Qty</TableHead>
+                                                <TableHead className="text-right">Hari</TableHead>
                                                 <TableHead className="text-right">Unit Price</TableHead>
                                                 <TableHead className="text-right">Total</TableHead>
                                                 <TableHead className="w-10"></TableHead>
@@ -310,7 +323,15 @@ export function DetailsTab({ project, formatCurrency, onRefresh }: DetailsTabPro
                                                         )}
                                                     </TableCell>
                                                     <TableCell className="text-right">
-                                                        {item.quantity} {item.unit?.code}
+                                                        <div className="font-medium">
+                                                            {item.quantity} {getQuantityLabel(item.itemCatalog?.type)}
+                                                        </div>
+                                                        <div className="text-xs text-muted-foreground">
+                                                            Unit: {item.unit?.code}
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell className="text-right">
+                                                        {Number(item.durationDays ?? 1)} hari
                                                     </TableCell>
                                                     <TableCell className="text-right">
                                                         {formatCurrency(Number(item.unitPrice), project.currency)}
@@ -423,6 +444,7 @@ export function DetailsTab({ project, formatCurrency, onRefresh }: DetailsTabPro
                                     <TableHead>Item</TableHead>
                                     <TableHead>Type</TableHead>
                                     <TableHead className="text-right">Qty</TableHead>
+                                    <TableHead className="text-right">Hari</TableHead>
                                     <TableHead className="text-right">Unit Price</TableHead>
                                     <TableHead className="text-right">Total</TableHead>
                                     <TableHead className="w-10"></TableHead>
@@ -452,7 +474,15 @@ export function DetailsTab({ project, formatCurrency, onRefresh }: DetailsTabPro
                                             )}
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            {item.quantity} {item.unit?.code}
+                                            <div className="font-medium">
+                                                {item.quantity} {getQuantityLabel(item.itemCatalog?.type)}
+                                            </div>
+                                            <div className="text-xs text-muted-foreground">
+                                                Unit: {item.unit?.code}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            {Number(item.durationDays ?? 1)} hari
                                         </TableCell>
                                         <TableCell className="text-right">
                                             {formatCurrency(Number(item.unitPrice), project.currency)}
@@ -635,7 +665,7 @@ export function DetailsTab({ project, formatCurrency, onRefresh }: DetailsTabPro
                                                     <div className="space-y-3">
                                                         {division.tasks.map((task) =>
                                                             viewMode === "compact"
-                                                                ? renderCompactTask(task, division.id)
+                                                                ? renderCompactTask(task)
                                                                 : renderDetailedTask(task)
                                                         )}
                                                     </div>
